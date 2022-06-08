@@ -61,9 +61,9 @@ public class DeprecationLoggerExt extends RubyObject {
     @JRubyMethod(name = "deprecated", required = 1, optional = 1)
     public IRubyObject rubyDeprecated(final ThreadContext context, final IRubyObject[] args) {
         if (args.length > 1) {
-            logger.deprecated(args[0].asJavaString(), args[1]);
+            logger.deprecated(args[0].toString(), args[1]);
         } else {
-            logger.deprecated(args[0].asJavaString());
+            logger.deprecated(args[0].toString());
         }
         return this;
     }

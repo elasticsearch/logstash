@@ -470,6 +470,50 @@ describe LogStash::Plugin do
 
   end
 
+  describe "logger" do
+
+    let(:plugin_class) do
+      Class.new(LogStash::Filters::Base) do
+        config_name "logger_test"
+        def register; end
+      end
+    end
+
+    let(:config) { { 'id' => 'custom_plugin_id' } }
+
+    let(:plugin) { plugin_class.new(config) }
+
+    it "has a unique logger per plugin instance" do
+      another_plugin = plugin_class.new(config)
+      expect(plugin.logger).not_to be another_plugin.logger
+    end
+
+    context 'existing logging context' do
+
+      let(:logger_impl) do
+        org.apache.logging.log4j.LogManager.getLogger plugin.logger.name
+      end
+
+      before do
+        org.apache.logging.log4j.ThreadContext.put('plugin.id', '__EXISTING__')
+      end
+
+      after do
+        org.apache.logging.log4j.ThreadContext.remove('plugin.id')
+      end
+
+      it "restores existing logging context after logging" do
+        logger_impl.level = org.apache.logging.log4j.Level::TRACE
+        [:trace, :debug, :info, :warn, :error, :fatal].each do |level|
+          plugin.logger.send(level, 'TEST')
+          expect( org.apache.logging.log4j.ThreadContext.get('plugin.id') ).to eql '__EXISTING__'
+        end
+      end
+
+    end
+
+  end
+
   describe "deprecation logger" do
     let(:config) do
       {

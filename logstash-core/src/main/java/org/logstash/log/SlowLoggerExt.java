@@ -100,7 +100,7 @@ public class SlowLoggerExt extends RubyObject {
 
     @JRubyMethod(name = "on_event", required = 4)
     public IRubyObject onEvent(final ThreadContext context, final IRubyObject[] args) {
-        String message = args[0].asJavaString();
+        String message = args[0].toString();
         long eventDurationNanos = ((RubyNumeric)args[3]).getLongValue();
 
         if (warnThreshold >= 0 && eventDurationNanos > warnThreshold) {

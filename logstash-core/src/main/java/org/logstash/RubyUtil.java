@@ -72,6 +72,7 @@ import org.logstash.instrument.metrics.SnapshotExt;
 import org.logstash.log.DeprecationLoggerExt;
 import org.logstash.log.LoggableExt;
 import org.logstash.log.LoggerExt;
+import org.logstash.log.PluginLoggerExt;
 import org.logstash.log.SlowLoggerExt;
 import org.logstash.plugins.HooksRegistryExt;
 import org.logstash.plugins.UniversalPluginExt;
@@ -477,6 +478,8 @@ public final class RubyUtil {
         final RubyModule loggingModule = LOGSTASH_MODULE.defineOrGetModuleUnder("Logging");
         LOGGER = loggingModule.defineClassUnder("Logger", RUBY.getObject(), LoggerExt::new);
         LOGGER.defineAnnotatedMethods(LoggerExt.class);
+        final RubyClass pluginLoggerClass = loggingModule.defineClassUnder("PluginLogger", LOGGER, PluginLoggerExt::new);
+        pluginLoggerClass.defineAnnotatedMethods(PluginLoggerExt.class);
         SLOW_LOGGER = loggingModule.defineClassUnder(
             "SlowLogger", RUBY.getObject(), SlowLoggerExt::new);
         SLOW_LOGGER.defineAnnotatedMethods(SlowLoggerExt.class);

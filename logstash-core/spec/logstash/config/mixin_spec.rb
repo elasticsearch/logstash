@@ -37,7 +37,7 @@ describe LogStash::Config::Mixin do
     end
 
     it "should not log the password" do
-      expect(LogStash::Logging::Logger).to receive(:new).with(anything).and_return(double_logger)
+      expect(LogStash::Logging::PluginLogger).to receive(:new).with(anything).and_return(double_logger)
       expect(double_logger).to receive(:warn) do |arg1,arg2|
           message = 'You are using a deprecated config setting "old_opt" set in test_deprecated. Deprecated settings will continue to work, but are scheduled for removal from logstash in the future. this is old school If you have any questions about this, please visit the #logstash channel on freenode irc.'
           expect(arg1).to eq(message)
