@@ -96,7 +96,7 @@ RUN dnf -y upgrade && \
     # Minimal distributions do not ship with en language packs.
     <%   locale = 'C.UTF-8' -%>
   <% else -%>
-    <%   base_image = 'ubuntu:20.04' -%>
+    <%   base_image = 'ubuntu:22.04' -%>
     <%   package_manager = 'apt-get' -%>
     <%   locale = 'en_US.UTF-8' -%>
     <%   arch_command = 'dpkg --print-architecture' -%>
