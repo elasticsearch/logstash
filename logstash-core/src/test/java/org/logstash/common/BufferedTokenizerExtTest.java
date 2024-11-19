@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.logstash.RubyTestBase;
 import org.logstash.RubyUtil;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -87,5 +89,36 @@ public final class BufferedTokenizerExtTest extends RubyTestBase {
 
         tokens = (RubyArray<RubyString>) sut.extract(context, RubyUtil.RUBY.newString("\n\n\n"));
         assertEquals(List.of("", "", ""), tokens);
+    }
+
+    @Test
+    public void shouldRespectTheCharset() {
+        final String input = new String(new byte[] {(byte) 0xA3}, StandardCharsets.ISO_8859_1);
+        sut.extract(context, RubyUtil.RUBY.newString(input));
+
+        // send a delimiter to trigger the output of the only token
+        RubyArray<RubyString> tokens = (RubyArray<RubyString>) sut.extract(context, RubyUtil.RUBY.newString("\n"));
+
+        String token = (String) tokens.iterator().next();
+        assertEquals("£", token);
+        assertEqualsBytes(new byte[] {(byte) 0xC2, (byte) 0xA3}, token.getBytes(StandardCharsets.UTF_8));
+        assertEqualsBytes(new byte[] {(byte) 0xA3}, token.getBytes(StandardCharsets.ISO_8859_1));
+    }
+
+    private void assertEqualsBytes(byte[] expected, byte[] actual) {
+        assertEquals(expected.length, actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], actual[i]);
+        }
+    }
+
+    @Test
+    public void testEncodingIsPreserved() {
+        RubyString rubyString = RubyString.newString(RUBY, new byte[]{(byte) 0xA3});
+
+        IRubyObject rubyInput = rubyString.force_encoding(context, RUBY.newString("ISO8859-1"));
+        sut.extract(context, rubyInput);
+
+        assertEqualsBytes(new byte[]{(byte) 0xA3}, ((RubyString) sut.flush(context)).getBytes());
     }
 }
