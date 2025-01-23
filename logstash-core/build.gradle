@@ -220,6 +220,10 @@ idea {
 }
 
 dependencies {
+    runtimeOnly("org.bouncycastle:bc-fips:2.0.0")
+    runtimeOnly("org.bouncycastle:bcpkix-fips:2.0.7")
+    runtimeOnly("org.bouncycastle:bctls-fips:2.0.19")
+    runtimeOnly("org.bouncycastle:bcutil-fips:2.0.3")
     api(files("../vendor/jruby/lib/jruby.jar") { // jruby-core.jar
         builtBy ':downloadAndInstallJRuby'
     }) { because "DEPENDENCY: org.jruby:jruby-core:${jrubyVersion}" } // meta-data for generateLicenseReport

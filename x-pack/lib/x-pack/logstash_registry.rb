@@ -7,8 +7,10 @@ xpack_modules = ["azure", "arcsight"]
 xpack_modules.each do |name|
   $LOAD_PATH << File.join(LogStash::XPACK_PATH, "modules", name, "lib")
 end
+
 require "logstash/plugins/registry"
 require "logstash/modules/util"
+require "fips_validation/extension" if File.exist?(File.join(LogStash::XPACK_PATH, "lib/fips_validation/extension.rb"))
 require "monitoring/monitoring"
 require "monitoring/inputs/metrics"
 require "monitoring/outputs/elasticsearch_monitoring"
