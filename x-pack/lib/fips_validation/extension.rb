@@ -17,6 +17,8 @@ module LogStash
       end
 
       def before_bootstrap_checks(runner)
+        return unless ENV['ENFORCE_FIPS_140_3']
+
         issues = []
 
         # naive security provider check: specific three in specific order
