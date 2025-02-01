@@ -1,0 +1,21 @@
+grant {
+    // Your existing permissions
+    permission java.lang.PropertyPermission "java.runtime.name", "read";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.internal.spec";
+    permission java.lang.RuntimePermission "getProtectionDomain";
+    permission java.lang.RuntimePermission "accessDeclaredMembers";
+    permission org.bouncycastle.crypto.CryptoServicesPermission "tlsAlgorithmsEnabled";
+    permission org.bouncycastle.crypto.CryptoServicesPermission "exportKeys";
+
+    // Add provider permissions
+    permission java.security.SecurityPermission "putProviderProperty.BCFIPS";
+    permission java.security.SecurityPermission "insertProvider.BCFIPS";
+    permission java.security.SecurityPermission "putProviderProperty.BCJSSE";
+    permission java.security.SecurityPermission "insertProvider.BCJSSE";
+};
+
+deny {
+    permission java.security.SecurityPermission "putProviderProperty.BC";
+    permission java.security.SecurityPermission "insertProvider.BC";
+    permission java.security.SecurityPermission "removeProvider.BC";
+};

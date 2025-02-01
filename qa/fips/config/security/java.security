@@ -1,0 +1,118 @@
+security.provider.1=org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider
+security.provider.2=org.bouncycastle.jsse.provider.BouncyCastleJsseProvider fips:BCFIPS
+security.provider.3=SUN
+security.provider.11=-BC
+
+securerandom.source=file:/dev/random
+securerandom.strongAlgorithms=NativePRNGBlocking:SUN,DRBG:SUN
+securerandom.drbg.config=
+
+login.configuration.provider=sun.security.provider.ConfigFile
+
+policy.provider=sun.security.provider.PolicyFile
+policy.url.1=file:/etc/java/security/java.policy
+policy.expandProperties=true
+policy.allowSystemProperty=true
+policy.ignoreIdentityScope=false
+
+keystore.type=bcfks
+keystore.type.compat=true
+
+package.access=sun.misc.,\
+               sun.reflect.
+package.definition=sun.misc.,\
+                   sun.reflect.
+
+security.overridePropertiesFile=true
+
+ssl.KeyManagerFactory.algorithm=PKIX
+ssl.TrustManagerFactory.algorithm=PKIX
+
+networkaddress.cache.negative.ttl=10
+
+krb5.kdc.bad.policy = tryLast
+
+sun.security.krb5.disableReferrals=false
+sun.security.krb5.maxReferrals=5
+
+jdk.disabled.namedCurves = secp112r1, secp112r2, secp128r1, secp128r2, \
+    secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, \
+    secp224r1, secp256k1, sect113r1, sect113r2, sect131r1, sect131r2, \
+    sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, \
+    sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, \
+    sect571k1, sect571r1, X9.62 c2tnb191v1, X9.62 c2tnb191v2, \
+    X9.62 c2tnb191v3, X9.62 c2tnb239v1, X9.62 c2tnb239v2, X9.62 c2tnb239v3, \
+    X9.62 c2tnb359v1, X9.62 c2tnb431r1, X9.62 prime192v2, X9.62 prime192v3, \
+    X9.62 prime239v1, X9.62 prime239v2, X9.62 prime239v3, brainpoolP256r1, \
+    brainpoolP320r1, brainpoolP384r1, brainpoolP512r1
+
+jdk.certpath.disabledAlgorithms=MD2, MD5, \
+    RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, \
+    SHA1, \
+    secp112r1, secp112r2, secp128r1, secp128r2, \
+    secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, \
+    secp224r1, secp256k1, sect113r1, sect113r2, sect131r1, sect131r2, \
+    sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, \
+    sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, \
+    sect571k1, sect571r1, \
+    brainpoolP256r1, brainpoolP320r1, brainpoolP384r1, brainpoolP512r1
+
+jdk.security.legacyAlgorithms=SHA1, \
+    RSA keySize < 2048, DSA keySize < 2048
+
+jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, \
+    DSA keySize < 1024, SHA1, \
+    secp112r1, secp112r2, secp128r1, secp128r2, \
+    secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, \
+    secp224r1, secp256k1, sect113r1, sect113r2, sect131r1, sect131r2, \
+    sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, \
+    sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, \
+    sect571k1, sect571r1, X9.62 c2tnb191v1, X9.62 c2tnb191v2, \
+    X9.62 c2tnb191v3, X9.62 c2tnb239v1, X9.62 c2tnb239v2, X9.62 c2tnb239v3, \
+    X9.62 c2tnb359v1, X9.62 c2tnb431r1, X9.62 prime192v2, X9.62 prime192v3, \
+    X9.62 prime239v1, X9.62 prime239v2, X9.62 prime239v3, brainpoolP256r1, \
+    brainpoolP320r1, brainpoolP384r1, brainpoolP512r1
+
+jdk.tls.disabledAlgorithms=MD5, SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+    DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+    secp112r1, secp112r2, secp128r1, secp128r2, \
+    secp160k1, secp160r1, secp160r2, secp192k1, secp192r1, secp224k1, \
+    secp224r1, secp256k1, sect113r1, sect113r2, sect131r1, sect131r2, \
+    sect163k1, sect163r1, sect163r2, sect193r1, sect193r2, sect233k1, \
+    sect233r1, sect239k1, sect283k1, sect283r1, sect409k1, sect409r1, \
+    sect571k1, sect571r1, brainpoolP256r1, \
+    brainpoolP320r1, brainpoolP384r1, brainpoolP512r1
+jdk.tls.legacyAlgorithms= \
+        K_NULL, C_NULL, M_NULL, \
+        DH_anon, ECDH_anon, \
+        RC4_128, RC4_40, DES_CBC, DES40_CBC, \
+        3DES_EDE_CBC
+jdk.tls.keyLimits=AES/GCM/NoPadding KeyUpdate 2^37, \
+                  ChaCha20-Poly1305 KeyUpdate 2^37
+
+crypto.policy=unlimited
+
+jdk.xml.dsig.secureValidationPolicy=\
+    disallowAlg http://www.w3.org/TR/1999/REC-xslt-19991116,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#rsa-md5,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#hmac-md5,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#md5,\
+    maxTransforms 5,\
+    maxReferences 30,\
+    disallowReferenceUriSchemes file http https,\
+    minKeySize RSA 1024,\
+    minKeySize DSA 1024,\
+    minKeySize EC 224,\
+    noDuplicateIds,\
+    noRetrievalMethodLoops
+
+jceks.key.serialFilter = java.base/java.lang.Enum;java.base/java.security.KeyRep;\
+  java.base/java.security.KeyRep$Type;java.base/javax.crypto.spec.SecretKeySpec;!*
+
+jdk.sasl.disabledMechanisms=CRAM-MD5, DIGEST-MD5
+jdk.security.caDistrustPolicies=SYMANTEC_TLS
+jdk.io.permissionsUseCanonicalPath=false
+
+jdk.tls.alpnCharset=ISO_8859_1
+
+org.bouncycastle.fips.approved_only=true

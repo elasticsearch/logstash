@@ -1,0 +1,18 @@
+---
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /filebeat-logs/test.log
+  scan_frequency: 10s
+
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl:
+    enabled: true
+    certificate_authorities: ["/usr/share/filebeat/certs/ca.crt"]
+    certificate: "/usr/share/filebeat/certs/es01.crt"
+    key: "/usr/share/filebeat/certs/es01.key"
+    verification_mode: "full" 
+
+logging.level: debug

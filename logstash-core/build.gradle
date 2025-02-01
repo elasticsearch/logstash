@@ -235,6 +235,10 @@ dependencies {
     runtimeOnly 'commons-logging:commons-logging:1.3.1'
     // also handle libraries relying on log4j 1.x to redirect their logs
     runtimeOnly "org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}"
+    runtimeOnly("org.bouncycastle:bc-fips:2.0.0")
+    runtimeOnly("org.bouncycastle:bcpkix-fips:2.0.7")
+    runtimeOnly("org.bouncycastle:bctls-fips:2.0.19")
+    runtimeOnly("org.bouncycastle:bcutil-fips:2.0.3")
     implementation('org.reflections:reflections:0.10.2') {
         exclude group: 'com.google.guava', module: 'guava'
     }

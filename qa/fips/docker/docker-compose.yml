@@ -1,0 +1,76 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.1
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/es01.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/es01.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/es01.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=changeit
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -u elastic:changeit https://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  logstash:
+    build:
+      context: ../../../
+      dockerfile: qa/fips/docker/Dockerfile
+    volumes:
+      - ./pipelines:/logstash/pipelines
+      - ./certs:/etc/logstash/certs
+    environment:
+      - ELASTIC_PASSWORD=changeit
+      - ES_HOSTS=https://elasticsearch:9200
+    networks:
+      - elastic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "5044:5044"
+    command: ["/logstash/bin/logstash", "-f", "/logstash/pipelines/fips-test-pipeline.conf", "--debug"]
+    # command: ["sleep", "infinity"]
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.17.1
+    volumes:
+      - ./certs:/usr/share/filebeat/certs
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./filebeat-logs:/filebeat-logs
+    environment:
+      - ELASTIC_PASSWORD=changeit
+    networks:
+      - elastic
+    depends_on:
+      - logstash
+
+networks:
+  elastic:
+    driver: bridge
+
+volumes:
+  es_data:
+    driver: local
