@@ -177,7 +177,9 @@ defined in the `-oss` image.
 
 These settings are defined in the default `logstash.yml`. They can be overridden
 with a <<docker-bind-mount-settings,custom `logstash.yml`>> or via
-<<docker-env-config,environment variables>>.
+<<docker-env-config,environment variables>>. When setting the Elasticsearch host
+address via an environment variable, the relevant variable is 
+`XPACK_MONITORING_ELASTICSEARCH_HOST`.
 
 IMPORTANT: If replacing `logstash.yml` with a custom version, be sure to copy the
 above defaults to the custom file if you want to retain them. If not, they will
