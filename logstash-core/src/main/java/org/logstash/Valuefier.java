@@ -138,6 +138,8 @@ public final class Valuefier {
         converters.put(RubyBignum.class, IDENTITY);
         converters.put(RubyBigDecimal.class, IDENTITY);
         converters.put(String.class, input -> RubyUtil.RUBY.newString((String) input));
+        converters.put(Byte.class, input -> RubyUtil.RUBY.newString(input.toString()));
+        converters.put(Short.class, LONG_CONVERTER);
         converters.put(Float.class, FLOAT_CONVERTER);
         converters.put(Double.class, FLOAT_CONVERTER);
         converters.put(
