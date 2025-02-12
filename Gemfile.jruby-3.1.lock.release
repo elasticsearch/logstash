@@ -409,9 +409,8 @@ GEM
       logstash-codec-plain
       logstash-core-plugin-api (~> 2.0)
       stud (>= 0.0.22)
-    logstash-input-beats (6.9.1-java)
+    logstash-input-beats (6.9.2-java)
       concurrent-ruby (~> 1.0)
-      jar-dependencies (~> 0.3, >= 0.3.4)
       logstash-codec-multiline (>= 2.0.5)
       logstash-codec-plain
       logstash-core-plugin-api (>= 1.60, <= 2.99)
@@ -484,7 +483,7 @@ GEM
       logstash-mixin-ecs_compatibility_support (~> 1.2)
       logstash-mixin-event_support (~> 1.0)
       stud
-    logstash-input-http (3.10.0-java)
+    logstash-input-http (3.10.1-java)
       logstash-codec-plain
       logstash-core-plugin-api (>= 1.60, <= 2.99)
       logstash-mixin-ecs_compatibility_support (~> 1.2)
@@ -528,7 +527,7 @@ GEM
       logstash-filter-grok (>= 4.4.1)
       logstash-mixin-ecs_compatibility_support (~> 1.2)
       stud (>= 0.0.22, < 0.1.0)
-    logstash-input-tcp (6.4.4-java)
+    logstash-input-tcp (6.4.5-java)
       jruby-openssl (>= 0.12.2)
       logstash-codec-json
       logstash-codec-json_lines
