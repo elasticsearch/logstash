@@ -1,7 +1,7 @@
 [[docker]]
 === Running Logstash on Docker
 Docker images for Logstash are available from the Elastic Docker
-registry. The base image is https://hub.docker.com/_/centos/[centos:7].
+registry. The base image is https://hub.docker.com/_/ubuntu[ubuntu:20.04].
 
 A list of all published Docker images and tags is available at
 https://www.docker.elastic.co[www.docker.elastic.co]. The source code is in
