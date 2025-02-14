@@ -5,7 +5,9 @@ FROM docker.elastic.co/wolfi/chainguard-base-fips:latest
 RUN apk add --no-cache \
     openjdk-21 \
     bash \
-    git
+    git \
+    curl \
+    make
 
 # Create directory for security configuration
 RUN mkdir -p /etc/java/security
@@ -54,7 +56,8 @@ RUN keytool -importkeystore \
 ENV JAVA_SECURITY_PROPERTIES=/etc/java/security/java.security
 ENV LS_JAVA_OPTS="\
     -Dio.netty.ssl.provider=JDK \
-    -Djava.security.debug=ssl,provider,certpath \
+    # Enable debug logging for ensuring BCFIPS is being used if needed
+    # -Djava.security.debug=ssl,provider,certpath \
     -Djava.security.properties=${JAVA_SECURITY_PROPERTIES} \
     -Djavax.net.ssl.keyStore=/etc/java/security/keystore.bcfks \
     -Djavax.net.ssl.keyStoreType=BCFKS \
