@@ -79,7 +79,11 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'logstash-filter-geoip', '>= 7.2.1' # breaking change of DatabaseManager
   gem.add_dependency 'down', '~> 5.2.0' #(MIT license)
   gem.add_dependency 'tzinfo-data' #(MIT license)
-  gem.add_dependency 'rufus-scheduler' #(MIT license)
+  # TEMPORARY: Modern Rufus Scheduler 3.x subtly breaks thread joining, which
+  # is done in several plugins to handle shutdowns.
+  # Pin pending migration to shared Scheduler Mixin that can mitigate this issue.
+  # https://github.com/logstash-plugins/logstash-mixin-scheduler/pull/1
+  gem.add_runtime_dependency 'rufus-scheduler', '~> 3.0.9' #(MIT license)
 
   # TEMPORARY: racc-1.6.0 doesn't have JAVA counterpart (yet)
   # SEE: https://github.com/ruby/racc/issues/172
