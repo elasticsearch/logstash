@@ -53,8 +53,9 @@ shared_examples "a pipeline reporter" do |pipeline_setup|
       expect(@pre_snapshot.stalling_threads_info).to eql([])
     end
 
-    it "should end with no stalled threads" do
-      expect(@post_snapshot.stalling_threads_info).to eql([])
+    it "should end with no plugin stalled threads" do
+      expect(@post_snapshot.stalling_threads_info.length).to be(1)
+      expect(@post_snapshot.stalling_threads_info).to include(hash_including("name" => pipeline.instance_variable_get("@thread")[:name]))
     end
   end
 
