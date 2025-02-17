@@ -64,7 +64,10 @@ describe LogStash::Inputs::Metrics::StatsEventFactory do
     agent
     agent_task
 
-    wait(60).for { agent.get_pipeline(:main) }.to_not be_nil
+    wait(60).for do
+      pipeline = agent.get_pipeline(:main)
+      pipeline && pipeline.running?
+    end.to be_truthy
 
     # collector.snapshot_metric is timing dependant and if fired too fast will miss some metrics.
     # after some tests a correct metric_store.size is 72 but when it is incomplete it is lower.
