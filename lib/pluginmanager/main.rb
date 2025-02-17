@@ -34,6 +34,7 @@ require "pluginmanager/install"
 require "pluginmanager/remove"
 require "pluginmanager/list"
 require "pluginmanager/update"
+require "pluginmanager/clean"
 require "pluginmanager/pack"
 require "pluginmanager/unpack"
 require "pluginmanager/generate"
@@ -50,6 +51,7 @@ module LogStash
       subcommand "install", "Install a Logstash plugin", LogStash::PluginManager::Install
       subcommand "remove", "Remove a Logstash plugin", LogStash::PluginManager::Remove
       subcommand "update", "Update a plugin", LogStash::PluginManager::Update
+      subcommand "clean", "Remove all inactive plugins", LogStash::PluginManager::Clean
       subcommand "pack", "Package currently installed plugins, Deprecated: Please use prepare-offline-pack instead", LogStash::PluginManager::Pack
       subcommand "unpack", "Unpack packaged plugins, Deprecated: Please use prepare-offline-pack instead", LogStash::PluginManager::Unpack
       subcommand "generate", "Create the foundation for a new plugin", LogStash::PluginManager::Generate
