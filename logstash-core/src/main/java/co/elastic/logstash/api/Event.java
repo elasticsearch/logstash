@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * Event interface for Java plugins. Java plugins should be not rely on the implementation details of any
+ * Event interface for Java plugins. Java plugins should not rely on the implementation details of any
  * concrete implementations of the Event interface.
  */
 public interface Event {
