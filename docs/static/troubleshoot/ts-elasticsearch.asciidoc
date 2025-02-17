@@ -1,0 +1,39 @@
+[[ts-elasticsearch]]
+==== {es} issues and solutions
+
+[discrete]
+[[ts-elasticsearch-409]]
+===== {es} rejects documents with HTTP 409 _'version conflict, document already exists'_ exception
+
+Note that these outlines are about https://www.elastic.co/guide/en/elasticsearch/reference/current/data-streams.html[data streams].
+If you are _manually_ setting document `_id`, ensure its uniqueness.
+
+*Symptoms*
+
+When elastic-agent transmits events to {ls} and then {ls} bypasses them to {es} with <<plugins-outputs-elasticsearch,{es} output plugin>>, there are situations that {es} may reject documents with `version_conflict_engine_exception` exception.
+The logs may look like as follows:
+
+-----
+[2024-06-04T12:57:59,670][WARN ][logstash.outputs.elasticsearch][elastic-agent-to-logstash][abcd1....] Failed action {:status=>409, :action=>["create",
+{:_id=>nil, ... {"error"=>{"type"=>"version_conflict_engine_exception", "reason"=>"[Cx8OD9UBQrQcJL5Jv3oJSE5iHUs=]: version conflict, document already exists (current version [1])",
+"index_uuid"=>"-h1tlFaSQK-2plBj_kNTig", "shard"=>"0", "index"=>".ds-logs-m365_defender.log-2024.06.02-000021"}}}}
+-----
+
+*Analysis and possible case solutions*
+
+[[ts-elasticsearch-409-with-backpressure]]
+===== {ls} is experiencing a backpressure
+
+When {ls} faces backpressure, it cannot ackknowledge the events back to elastic-agent and as a result agent timeouts, resends the events.
+However, previously sent events are (fully or partially) indexed into {es}.
+From the agent side, extending timeout in elastic-agent configuration may improve the situation.
+However, it is highly recommended to
+- figure out where is the slow performant of the pipeline in node <<flow-stats>>
+- address the bottleneck by tuning the {ls} pipeline, see <<tuning-logstash>>.
+
+
+[[ts-elasticsearch-409-with-tsds]]
+===== Time series data stream (TSDS) based integration
+
+`_id` for TSDS documents is a hash value, calculated by integrations based on https://www.elastic.co/guide/en/elasticsearch/reference/current/tsds.html#time-series-dimension[document's dimentions] and `@timestamp`.
+Depending on dimention granularity and the time frequency {es} receives documents, `_id` might not be unique.
