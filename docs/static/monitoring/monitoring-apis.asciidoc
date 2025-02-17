@@ -30,10 +30,6 @@ Example response:
 }
 --------------------------------------------------
 
-NOTE: By default, the monitoring API attempts to bind to `tcp:9600`. If this port is already in use by another Logstash
-instance, you need to launch Logstash with the `--api.http.port` flag specified to bind to a different port. See
-<<command-line-flags>> for more information.
-
 [discrete]
 [[monitoring-api-security]]
 ==== Securing the Logstash API
