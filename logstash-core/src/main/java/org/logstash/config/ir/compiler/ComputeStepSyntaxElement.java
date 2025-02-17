@@ -52,8 +52,6 @@ public final class ComputeStepSyntaxElement<T extends Dataset> {
 
     private static final Path SOURCE_DIR = debugDir();
 
-    private static final ThreadLocal<ISimpleCompiler> COMPILER = ThreadLocal.withInitial(SimpleCompiler::new);
-
     /**
      * Global cache of runtime compiled classes to prevent duplicate classes being compiled.
      * across pipelines and workers.
@@ -99,9 +97,7 @@ public final class ComputeStepSyntaxElement<T extends Dataset> {
     * */
     @VisibleForTesting
     public static void cleanClassCache() {
-        synchronized (COMPILER) {
-            CLASS_CACHE.clear();
-        }
+        CLASS_CACHE.clear();
     }
 
     private ComputeStepSyntaxElement(
@@ -139,7 +135,7 @@ public final class ComputeStepSyntaxElement<T extends Dataset> {
     private  Class<? extends Dataset> compile() {
         return CLASS_CACHE.computeIfAbsent(this, (__)->{
             try {
-                final ISimpleCompiler compiler = COMPILER.get();
+                final ISimpleCompiler compiler = new SimpleCompiler();
                 final String name = String.format("CompiledDataset%d", DATASET_CLASS_INDEX.incrementAndGet());
                 final String code = CLASS_NAME_PLACEHOLDER_REGEX.matcher(normalizedSource).replaceAll(name);
                 if (SOURCE_DIR != null) {
