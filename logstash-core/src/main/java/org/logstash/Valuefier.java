@@ -22,6 +22,7 @@ package org.logstash;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -199,6 +200,11 @@ public final class Valuefier {
         converters.put(
                 ZonedDateTime.class, input -> JrubyTimestampExtLibrary.RubyTimestamp.newRubyTimestamp(
                         RubyUtil.RUBY, new Timestamp(((ZonedDateTime) input).toInstant())
+                )
+        );
+        converters.put(
+                Instant.class, input -> JrubyTimestampExtLibrary.RubyTimestamp.newRubyTimestamp(
+                        RubyUtil.RUBY, new Timestamp((Instant) input)
                 )
         );
         return converters;

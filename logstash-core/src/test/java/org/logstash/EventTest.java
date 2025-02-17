@@ -29,6 +29,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,8 +40,14 @@ import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -228,6 +236,56 @@ public final class EventTest extends RubyTestBase {
                 e.getTimestamp().toString(), new Timestamp(time.getDateTime()).toString()
             ), e.toJson()
         );
+    }
+
+    @Test
+    public void testEventTimestampConstructorStringValueRetainsNanoResolution() {
+        final String iso8601TimestampWithNanos = "2023-05-10T21:43:08.726162941Z";
+        Event e = new Event(Map.of("@timestamp", iso8601TimestampWithNanos));
+
+        assertEquals("iso8601 string in Event#new(Map) retains precision", e.getEventTimestamp(), Instant.parse(iso8601TimestampWithNanos));
+    }
+
+    @Test
+    public void testEventTimestampConstructorInstantValueRetainsNanoResolution() {
+        final Instant givenInstant = Instant.parse("2023-05-10T21:43:08.726162941Z");
+        Event e = new Event(Map.of("@timestamp", givenInstant));
+
+        assertEquals("iso8601 string in Event#new(Map) retains precision", e.getEventTimestamp(), givenInstant);
+    }
+
+    @Test
+    public void testEventTimestampConstructorZonedDateTimeValueRetainsNanoResolution() {
+        final ZonedDateTime zonedDateTime = ZonedDateTime.parse("2023-05-10T21:43:08.726162941Z");
+        Event e = new Event(Map.of("@timestamp", zonedDateTime));
+
+        assertEquals("iso8601 string in Event#new(Map) retains precision", e.getEventTimestamp(), zonedDateTime.toInstant());
+    }
+
+    @Test
+    public void testEventTimestampSetterRetainsNanoResolution() {
+        Event e = new Event(Map.of("@timestamp", "2000-01-01T00:00:00.000Z"));
+
+        final Instant updatedTimestamp = Instant.parse("2023-05-10T21:43:08.726162941Z");
+        e.setEventTimestamp(updatedTimestamp);
+
+        assertThat(e.getEventTimestamp(), is(equalTo(updatedTimestamp)));
+    }
+
+    @Test
+    public void testEventTimestampSetterDefaultsToNow() {
+        Event e = new Event(Map.of("@timestamp", "2000-01-01T00:00:00.000Z"));
+
+        final Instant baseline = Instant.now();
+        e.setEventTimestamp(null);
+
+        final Instant updatedTimestamp = e.getEventTimestamp();
+        assertThat(updatedTimestamp, allOf(
+                is(notNullValue()),
+                both(greaterThanOrEqualTo(baseline)).and(lessThanOrEqualTo(Instant.now()))
+        ));
+
+        assertThat("a set-with-null timestamp is actually set", e.getEventTimestamp(), is(equalTo(updatedTimestamp)));
     }
 
     @Test
