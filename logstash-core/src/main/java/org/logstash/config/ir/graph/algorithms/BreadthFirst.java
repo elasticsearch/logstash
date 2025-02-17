@@ -38,7 +38,6 @@ public class BreadthFirst {
                                         Consumer<Map.Entry<Vertex, Integer>> consumer
                                         ) {
     Map<Vertex, Integer> vertexDistances = new HashMap<>();
-    Map<Vertex, Vertex> vertexParents = new HashMap<>();
 
     Deque<Vertex> queue = new ArrayDeque<>(roots);
     roots.forEach(v -> vertexDistances.put(v, 0));
@@ -55,7 +54,6 @@ public class BreadthFirst {
         nextVertices.forEach(nextVertex -> {
             if (vertexDistances.get(nextVertex) == null) {
                 vertexDistances.put(nextVertex, currentDistance+1);
-                vertexParents.put(nextVertex, currentVertex);
                 queue.push(nextVertex);
             }
         });
