@@ -35,7 +35,7 @@ jobs:
           LINT="${LINT//$'\n'/'%0A'}"
           LINT="${LINT//$'\r'/'%0D'}"
           LINT="${LINT//$'`'/'\`'}"
-          echo "::set-output name=LINT_RESULT::$LINT"
+          echo "LINT_RESULT=$LINT" >> $GITHUB_OUTPUT
 
       - name: Add PR comment
         uses: actions/github-script@v6
