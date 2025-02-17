@@ -350,7 +350,7 @@ public final class Graph implements SourceComponent, Hashable {
     public String toString() {
         final Stream<Edge> edgesToFormat = sortedEdges();
         final String edgelessVerticesStr;
-        if (this.isolatedVertices().count() > 0) {
+        if (this.isolatedVertices().findAny().isPresent()) {
             edgelessVerticesStr = "\n== Vertices Without Edges ==\n" +
                     this.isolatedVertices().map(Vertex::toString).collect(Collectors.joining("\n"));
         } else {
