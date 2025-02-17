@@ -25,6 +25,8 @@ import org.logstash.common.Util;
 import org.logstash.config.ir.SourceComponent;
 import org.logstash.common.SourceWithMetadata;
 
+import java.util.Objects;
+
 public final class SeparatorVertex extends Vertex {
 
     public SeparatorVertex(String id) throws IncompleteSourceWithMetadataException {
@@ -48,7 +50,7 @@ public final class SeparatorVertex extends Vertex {
 
     @Override
     public boolean sourceComponentEquals(SourceComponent other) {
-        return other instanceof SeparatorVertex && ((SeparatorVertex)other).getId() == this.getId();
+        return other instanceof SeparatorVertex && Objects.equals(((SeparatorVertex) other).getId(), this.getId());
     }
 
     // Special vertices really have no metadata
