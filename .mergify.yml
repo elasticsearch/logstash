@@ -1,0 +1,114 @@
+pull_request_rules:
+  - name: ask to resolve conflict
+    conditions:
+      - conflict
+    actions:
+      comment:
+        message: |
+          This pull request is now in conflicts. Could you fix it @{{author}}? 🙏
+          To fixup this pull request, you can check out it locally. See documentation: https://help.github.com/articles/checking-out-pull-requests-locally/
+          ```
+          git fetch upstream
+          git checkout -b {{head}} upstream/{{head}}
+          git merge upstream/{{base}}
+          git push upstream {{head}}
+          ```
+
+  - name: notify the backport policy
+    conditions:
+      - -label~=^backport
+      - base=main
+    actions:
+      comment:
+        message: |
+          This pull request does not have a backport label. Could you fix it @{{author}}? 🙏
+          To fixup this pull request, you need to add the backport labels for the needed
+          branches, such as:
+          * `backport-8./d` is the label to automatically backport to the `8./d` branch. `/d` is the digit.
+          * `backport-8.x` is the label to automatically backport to the `8.x` branch.
+
+  - name: add backport-8.x for the all the PRs targeting main if no skipped or assigned already
+    conditions:
+      - -label~=^(backport-skip|backport-8.x)$
+      - base=main
+    actions:
+      comment:
+        message: |
+          `backport-8.x` has been added to help with the transition to the new branch `8.x`.
+          If you don't need it please use `backport-skip` label.
+      label:
+        add:
+          - backport-8.x
+
+  - name: remove backport-skip label
+    conditions:
+      - label~=^backport-\d
+    actions:
+      label:
+        remove:
+          - backport-skip
+
+  - name: remove backport-8.x label if backport-skip is present
+    conditions:
+      - label~=^backport-skip
+    actions:
+      label:
+        remove:
+          - backport-8.x
+
+  - name: notify the backport has not been merged yet
+    conditions:
+      - -merged
+      - -closed
+      - author=mergify[bot]
+      - "#check-success>0"
+      - schedule=Mon-Mon 06:00-10:00[Europe/Paris]
+    actions:
+      comment:
+        message: |
+          This pull request has not been merged yet. Could you please review and merge it @{{ assignee | join(', @') }}? 🙏
+
+  - name: backport patches to 8.x branch
+    conditions:
+      - merged
+      - base=main
+      - label=backport-8.x
+    actions:
+      backport:
+        assignees:
+          - "{{ author }}"
+        branches:
+          - "8.x"
+        labels:
+          - "backport"
+        title: "[{{ destination_branch }}] {{ title }} (backport #{{ number }})"
+
+  - name: backport patches to 8.16 branch
+    conditions:
+      - merged
+      - base=main
+      - label=backport-8.16
+    actions:
+      backport:
+        assignees:
+          - "{{ author }}"
+        branches:
+          - "8.16"
+        labels:
+          - "backport"
+        title: "[{{ destination_branch }}] {{ title }} (backport #{{ number }})"
+
+  - name: backport patches to 8.17 branch
+    conditions:
+      - merged
+      - base=main
+      - label=backport-8.17
+    actions:
+      backport:
+        assignees:
+          - "{{ author }}"
+        branches:
+          - "8.17"
+        labels:
+          - "backport"
+        title: "[{{ destination_branch }}] {{ title }} (backport #{{ number }})"

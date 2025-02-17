@@ -25,9 +25,13 @@ jobs:
   version_bumper:
     name: Bump versions
     runs-on: ubuntu-latest
+    env:
+      INPUTS_BRANCH: "${{ inputs.branch }}"
+      INPUTS_BUMP: "${{ inputs.bump }}"
+      BACKPORT_LABEL: "backport-${{ inputs.branch }}"
     steps:
       - name: Fetch logstash-core team member list
-        uses: tspascoal/get-user-teams-membership@v1
+        uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 #v3.0.0
         with: 
           username: ${{ github.actor }}
           organization: elastic
@@ -37,14 +41,14 @@ jobs:
         if: ${{ steps.checkUserMember.outputs.isTeamMember == 'false' }}
         run: exit 1
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ env.INPUTS_BRANCH }}
       - run: git config --global user.email "43502315+logstashmachine@users.noreply.github.com"
       - run: git config --global user.name "logstashmachine"
       - run: ./gradlew clean installDefaultGems
-      - run: ./vendor/jruby/bin/jruby -S bundle update --all --${{ github.event.inputs.bump }} --strict
+      - run: ./vendor/jruby/bin/jruby -S bundle update --all --${{ env.INPUTS_BUMP }} --strict
       - run: mv Gemfile.lock Gemfile.jruby-*.lock.release
       - run: echo "T=$(date +%s)" >> $GITHUB_ENV
       - run: echo "BRANCH=update_lock_${T}" >> $GITHUB_ENV
@@ -53,8 +57,21 @@ jobs:
           git add .
           git status
           if [[ -z $(git status --porcelain) ]]; then echo "No changes. We're done."; exit 0; fi
-          git commit -m "Update ${{ github.event.inputs.bump }} plugin versions in gemfile lock" -a
+          git commit -m "Update ${{ env.INPUTS_BUMP }} plugin versions in gemfile lock" -a
           git push origin $BRANCH
+
+      - name: Update mergify (minor only)
+        if: ${{ inputs.bump == 'minor' }}
+        continue-on-error: true
+        run: make -C .ci mergify BACKPORT_LABEL=$BACKPORT_LABEL BRANCH=$INPUTS_BRANCH PUSH_BRANCH=$BRANCH
+
       - name: Create Pull Request
         run: |
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d "{\"title\": \"bump lock file for ${{ github.event.inputs.branch }}\",\"head\": \"${BRANCH}\",\"base\": \"${{ github.event.inputs.branch }}\"}" https://api.github.com/repos/elastic/logstash/pulls
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d "{\"title\": \"bump lock file for ${{ env.INPUTS_BRANCH }}\",\"head\": \"${BRANCH}\",\"base\": \"${{ env.INPUTS_BRANCH }}\"}" https://api.github.com/repos/elastic/logstash/pulls
+
+      - name: Create GitHub backport label (Mergify) (minor only)
+        if: ${{ inputs.bump == 'minor' }}
+        continue-on-error: true
+        run: make -C .ci backport-label BACKPORT_LABEL=$BACKPORT_LABEL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
