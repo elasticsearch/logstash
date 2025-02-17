@@ -27,7 +27,10 @@ module LogStash module PluginManager module Utils
       proxy_url = ENV["https_proxy"] || ENV["HTTPS_PROXY"] || ""
       proxy_uri = URI(proxy_url)
 
-      Net::HTTP.start(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password, http_options(uri)) { |http| yield http }
+      proxy_uri_user = URI.unescape(proxy_uri.user)
+      proxy_uri_password = URI.unescape(proxy_uri.password)
+
+      Net::HTTP.start(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri_user, proxy_uri_password, http_options(uri)) { |http| yield http }
     end
 
     def self.http_options(uri)
