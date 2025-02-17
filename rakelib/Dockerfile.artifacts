@@ -1,0 +1,18 @@
+# This image contains the right dependencies to run `rake artifacts:all`
+# Example usage:
+#
+#  docker build -f rakelib/Dockerfile.artifacts -t ls-artifacts rakelib/
+#  docker run -it --rm -v `pwd`:/logstash:delegated ls-artifacts sh -c "cd logstash && rake artifact:all"
+#
+# Note that it seems that rake is a particularly bad case scenario for the
+# docker osxfs driver (it touches 10s of K of files). Hence the `:delegated`
+# parameter above is needed to get things to work at all, but it is still slow
+# and it's going to consume a lot of CPU.
+#
+# See https://docs.docker.com/docker-for-mac/osxfs/#performance-issues-solutions-and-roadmap
+FROM jruby:9
+
+RUN \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        default-jdk git binutils rpm
