@@ -479,7 +479,7 @@ module LogStash::Config::Mixin
             if value.size > 1 # only one value wanted
               return false, "Expected string, got #{value.inspect}"
             end
-            result = value.first
+            result = value.first.to_s
           when :number
             if value.size > 1 # only one value wanted
               return false, "Expected number, got #{value.inspect} (type #{value.class})"
@@ -538,7 +538,7 @@ module LogStash::Config::Mixin
               return false, "Expected password (one value), got #{value.size} values?"
             end
 
-            result = value.first.is_a?(::LogStash::Util::Password) ? value.first : ::LogStash::Util::Password.new(value.first)
+            result = value.first.is_a?(::LogStash::Util::Password) ? value.first : ::LogStash::Util::Password.new(value.first.to_s)
           when :uri
             if value.size > 1
               return false, "Expected uri (one value), got #{value.size} values?"

@@ -287,6 +287,53 @@ describe LogStash::Config::Mixin do
     end
   end
 
+  context "when validating :string" do
+    let(:plugin_class) do
+      Class.new(LogStash::Filters::Base) do
+        config "string_option", :validate => :string
+      end
+    end
+    let(:params) { {'string_option' => parameter_value} }
+
+    before(:each) do
+      allow(plugin_class).to receive(:logger).and_return(double('Logger').as_null_object)
+    end
+
+    context 'and input is a string' do
+      let(:parameter_value) { 'a string' }
+      it 'successfully initializes the plugin' do
+        expect(plugin_class.new(params)).to be_a_kind_of plugin_class
+      end
+      it 'holds the value' do
+        instance = plugin_class.new(params)
+        expect(instance.string_option).to_not be_nil
+        expect(instance.string_option).to eq(parameter_value)
+      end
+    end
+
+    context 'and input is multiple items' do
+      let(:parameter_value) { ['one string', 'another string'] }
+      it 'does not initialize the plugin' do
+        expect { plugin_class.new(params) }.to raise_exception(LogStash::ConfigurationError)
+        expect(plugin_class.logger).to have_received(:error).with(/Expected string/)
+      end
+    end
+
+    # Config AST favors Numeric to Bareword and handles unquoted number-like nodes as having a numeric value.
+    # We need to ensure that the config DSL maps these to their stringified counterpart
+    context 'and input is a number' do
+      let(:parameter_value) { 12345 }
+      it 'successfully initializes the plugin' do
+        expect(plugin_class.new(params)).to be_a_kind_of plugin_class
+      end
+      it 'holds a stringified value' do
+        instance = plugin_class.new(params)
+        expect(instance.string_option).to_not be_nil
+        expect(instance.string_option).to eq('12345')
+      end
+    end
+  end
+
   context "when validating :password" do
     shared_examples 'protected password' do
       let(:secret) { 'fancy pants' }
@@ -324,6 +371,16 @@ describe LogStash::Config::Mixin do
     context 'when instantiated with a string literal password' do
       it_behaves_like 'protected password' do
         let(:instance_params) { { "password" => secret } }
+      end
+    end
+
+    # Config AST handles number-like nodes as having a numeric value,
+    # and instantiates plugins without first converting them. We need to
+    # ensure that the config DSL maps these to their stringified counterpart
+    context 'when instantiated with a number literal password' do
+      it_behaves_like 'protected password' do
+        let(:secret) { '12345' }
+        let(:instance_params) { { 'password' => 12345 } }
       end
     end
 
