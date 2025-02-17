@@ -1,0 +1,21 @@
+# Config that attempts to create a binary PQ that contains a large number of datatypes
+# Run this then terminate it after the pipeline starts up
+# the long sleep should yield data in the queue directory.
+# Depending on how long it runs before shutting down more events will be acknowledged
+
+- pipeline.id: generator
+  queue.type: memory
+  config.string: |
+    input { generator { count => 1000 } }
+    filter {
+      ruby { path => "logstash-core/src/test/resources/binary-queue-samples/set_every_type.rb" }
+    }
+    output { pipeline { send_to => pq } }
+- pipeline.id: pq
+  pipeline.batch.size: 1
+  queue.type: persisted
+  queue.drain: false
+  config.string: |
+    input { pipeline { address => pq } }
+    filter { sleep { time => 1 } }
+    output { stdout { codec => rubydebug } }
