@@ -185,7 +185,9 @@ public final class OutputStrategyExt {
             final IRubyObject metric = args[1];
             final ExecutionContextExt executionContext = (ExecutionContextExt) args[2];
             final RubyHash pluginArgs = (RubyHash) args[3];
-            workerCount = pluginArgs.op_aref(context, context.runtime.newString("workers"));
+            IRubyObject pipeline = executionContext.callMethod(context, "pipeline");
+            IRubyObject settings = pipeline.callMethod(context, "settings");
+            workerCount = settings.callMethod(context, "get_value", context.runtime.newString("pipeline.workers"));
             if (workerCount.isNil()) {
                 workerCount = RubyFixnum.one(context.runtime);
             }
