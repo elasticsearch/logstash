@@ -1,6 +1,7 @@
 ### Benchmark CLI
 
 #### Build
+The build process will require Gradle 3.3 and OpenJDK 1.8.
 
 To build a self-contained archive of the benchmark tool simply run:
 
