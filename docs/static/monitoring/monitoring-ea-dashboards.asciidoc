@@ -71,8 +71,8 @@ details.
 * Under **Logs**, modify the log paths to match your {ls} environment.
 
 . Configure the integration to collect metrics.
-* Make sure that **Metrics (Technical Preview)** is turned on, and **Metrics (Stack Monitoring)** is turned off.
-* Under **Metrics (Technical Preview)**, make sure the {ls} URL setting
+* By default **Metrics (Elastic Agent)** is turned enabled, and **Metrics (Stack Monitoring)** is turned off.
+* Under **Metrics (Elastic Agent)**, make sure the {ls} URL setting
 points to your {ls} instance URLs. +
 By default, the integration collects {ls}
 monitoring metrics from `https://localhost:9600`. If that host and port number are not
