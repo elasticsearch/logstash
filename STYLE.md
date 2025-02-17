@@ -10,11 +10,11 @@ We support logging structured data, so please do that.
 
 Rather than this:
 
-    @logger.info("Some error occured in request #{request} on input #{input} from client #{ip}")
+    @logger.info("Some error occurred in request #{request} on input #{input} from client #{ip}")
 
 Do this:
     
-    @logger.info("Some error occured in this request", :request => request, :input => input, :client => ip)
+    @logger.info("Some error occurred in this request", :request => request, :input => input, :client => ip)
 
 ## Code Style
 
