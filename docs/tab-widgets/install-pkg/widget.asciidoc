@@ -1,0 +1,132 @@
+// The Java agent defaults to visible.
+// Change with `aria-selected="false"` and `hidden=""`
+++++
+<div class="tabs" data-tab-group="pkg-install">
+  <div role="tablist" aria-label="Install">
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="apt-tab-install"
+            id="go-install">
+      APT
+    </button>
+    <button role="tab"
+            aria-selected="true"
+            aria-controls="yum-tab-install"
+            id="java-install"
+            tabindex="-1">
+      YUM
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="net-tab-install"
+            id="net-install"
+            tabindex="-1">
+      .NET
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="node-tab-install"
+            id="node-install"
+            tabindex="-1">
+      Node.js
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="python-tab-install"
+            id="python-install"
+            tabindex="-1">
+      Python
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="ruby-tab-install"
+            id="ruby-install"
+            tabindex="-1">
+      Ruby
+    </button>
+    <button role="tab"
+        aria-selected="false"
+        aria-controls="rum-tab-install"
+        id="rum-install"
+        tabindex="-1">
+      RUM
+    </button>
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="go-tab-install"
+       aria-labelledby="go-install"
+       hidden="">
+++++
+
+include::content.asciidoc[tag=apt]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="java-tab-install"
+       aria-labelledby="java-install">
+++++
+
+include::content.asciidoc[tag=yum]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="net-tab-install"
+       aria-labelledby="net-install"
+       hidden="">
+++++
+
+include::content.asciidoc[tag=net]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="node-tab-install"
+       aria-labelledby="node-install"
+       hidden="">
+++++
+
+include::content.asciidoc[tag=node]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="python-tab-install"
+       aria-labelledby="python-install"
+       hidden="">
+++++
+
+include::content.asciidoc[tag=python]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="ruby-tab-install"
+       aria-labelledby="ruby-install"
+       hidden="">
+++++
+
+include::content.asciidoc[tag=ruby]
+
+++++
+  </div>
+  <div tabindex="0"
+      role="tabpanel"
+      id="rum-tab-install"
+      aria-labelledby="rum-install"
+      hidden="">
+++++
+
+include::content.asciidoc[tag=rum]
+
+++++
+  </div>
+</div>
+++++

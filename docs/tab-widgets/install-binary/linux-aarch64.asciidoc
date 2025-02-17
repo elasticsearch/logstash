@@ -1,0 +1,15 @@
+ifeval::["{release-state}"=="unreleased"]
+
+Version {logstash_version} of Logstash has not yet been released.
+
+endif::[]
+
+ifeval::["{release-state}"!="unreleased"]
+
+["source","sh",subs="attributes"]
+------------------------------------------------
+curl -L -O https://artifacts.elastic.co/downloads/logstash-{version}-linux-aarch64.tar.gz
+tar xzvf logstash-linux-aarch64.tar.gz
+------------------------------------------------
+
+endif::[]

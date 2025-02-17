@@ -1,0 +1,25 @@
+ifeval::["{release-state}"=="unreleased"]
+
+Version {logstash_version} of Logstash has not yet been released.
+
+endif::[]
+
+ifeval::["{release-state}"!="unreleased"]
+
+**RPM x86_64**
+
+["source","sh",subs="attributes"]
+------------------------------------------------
+curl -L -O https://artifacts.elastic.co/downloads/logstash-{version}-x86_64.rpm
+sudo rpm -vi logstash-{version}-x86_64.rpm
+------------------------------------------------
+
+**RPM AARCH64**
+
+["source","sh",subs="attributes"]
+------------------------------------------------
+curl -L -O https://artifacts.elastic.co/downloads/logstash/logstash-{version}-aarch64.rpm
+sudo rpm -vi logstash-{version}-aarch64.rpm
+------------------------------------------------
+
+endif::[]

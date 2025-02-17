@@ -1,0 +1,134 @@
+*Install the agent*
+
+Install the APM agent packages for Go.
+
+[source,go]
+----
+go get go.elastic.co/apm
+----
+
+*Instrument your application*
+
+Instrument your Go application by using one of the provided instrumentation modules or by using the tracer API directly.
+
+[source,go]
+----
+import (
+	"net/http"
+
+	"go.elastic.co/apm/module/apmhttp"
+)
+
+func main() {
+	mux := http.NewServeMux()
+	...
+	http.ListenAndServe(":8080", apmhttp.Wrap(mux))
+}
+----
+
+*Configure the agent*
+
+Configure the agent using environment variables:
+
+[source,yml]
+----
+        # ...
+        - name: ELASTIC_APM_SERVER_URL
+          value: "apm-server-url-goes-here" <1>
+        - name: ELASTIC_APM_SECRET_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: apm-secret
+              key: ELASTIC_APM_SECRET_TOKEN <2>
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: "service-name-goes-here" <3>
+----
+<1> Defaults to `http://localhost:8200`
+<2> Pass in `ELASTIC_APM_SECRET_TOKEN` from the `apm-secret` keystore created previously
+<3> Allowed characters: a-z, A-Z, 0-9, -, _, and space
+
+
+
+
+=====
+
+
+[float]
+==== APT
+
+ifeval::["{release-state}"=="unreleased"]
+
+Version {logstash_version} of Logstash has not yet been released.
+
+endif::[]
+
+ifeval::["{release-state}"!="unreleased"]
+
+Download and install the Public Signing Key:
+
+[source,sh]
+--------------------------------------------------
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+--------------------------------------------------
+
+You may need to install the `apt-transport-https` package on Debian before proceeding:
+
+[source,sh]
+--------------------------------------------------
+sudo apt-get install apt-transport-https
+--------------------------------------------------
+
+// THIS IS A NESTED STATEMENT - This block executes if release-state != unreleased and release-state == released
+
+ifeval::["{release-state}"=="released"]
+
+Save the repository definition to  +/etc/apt/sources.list.d/elastic-{major-version}.list+:
+
+["source","sh",subs="attributes"]
+--------------------------------------------------
+echo "deb https://artifacts.elastic.co/packages/{major-version}/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-{major-version}.list
+--------------------------------------------------
+
+endif::[]
+
+// THIS IS A NESTED STATEMENT - This block executes if release-state != unreleased and release-state == prerelase
+
+ifeval::["{release-state}"=="prerelease"]
+
+Save the repository definition to  +/etc/apt/sources.list.d/elastic-{major-version}-prerelease.list+:
+
+["source","sh",subs="attributes"]
+--------------------------------------------------
+echo "deb https://artifacts.elastic.co/packages/{major-version}-prerelease/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-{major-version}-prerelease.list
+--------------------------------------------------
+
+endif::[]
+
+[WARNING]
+==================================================
+Use the `echo` method described above to add the Logstash repository.  Do not
+use `add-apt-repository` as it will add a `deb-src` entry as well, but we do not
+provide a source package. If you have added the `deb-src` entry, you will see an
+error like the following:
+
+    Unable to find expected entry 'main/source/Sources' in Release file (Wrong sources.list entry or malformed file)
+
+Just delete the `deb-src` entry from the `/etc/apt/sources.list` file and the
+installation should work as expected.
+==================================================
+
+Run `sudo apt-get update` and the repository is ready for use. You can install
+it with:
+
+[source,sh]
+--------------------------------------------------
+sudo apt-get update && sudo apt-get install logstash
+--------------------------------------------------
+
+See {logstash-ref}/running-logstash.html[Running Logstash] for details about managing Logstash as a system service.
+
+endif::[]
+
+
+
+

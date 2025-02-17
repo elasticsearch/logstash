@@ -1,0 +1,106 @@
+// The ??? defaults to visible.
+// Change with `aria-selected="false"` and `hidden=""`
+++++
+<div class="tabs" data-tab-group="apm-agent-kube">
+  <div role="tablist" aria-label="Install-kube">
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="go-tab-install-kube"
+            id="go-install-kube">
+      Linux
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="net-tab-install-kube"
+            id="net-install-kube"
+            tabindex="-1">
+      MacOS
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="node-tab-install-kube"
+            id="node-install-kube"
+            tabindex="-1">
+      Windows
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="php-tab-install-kube"
+            id="php-install-kube"
+            tabindex="-1">
+      DEB
+    </button>
+    <button role="tab"
+            aria-selected="false"
+            aria-controls="ruby-tab-install-kube"
+            id="ruby-install-kube"
+            tabindex="-1">
+      RPM
+    </button>
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="go-tab-install-kube"
+       aria-labelledby="go-install-kube"
+       hidden="">
+++++
+
+include::linux.asciidoc[]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="net-tab-install-kube"
+       aria-labelledby="net-install-kube"
+       hidden="">
+++++
+
+include::macos.asciidoc[]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="node-tab-install-kube"
+       aria-labelledby="node-install-kube"
+       hidden="">
+++++
+
+include::windows.asciidoc[]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="php-tab-install-kube"
+       aria-labelledby="php-install-kube"
+       hidden="">
+++++
+
+include::deb.asciidoc[]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="python-tab-install-kube"
+       aria-labelledby="python-install-kube"
+       hidden="">
+++++
+
+include::rpm.asciidoc[]
+
+++++
+  </div>
+  <div tabindex="0"
+       role="tabpanel"
+       id="net-tab-install-kube"
+       aria-labelledby="net-install-kube"
+       hidden="">
+++++
+
+++++
+  </div>
+</div>
+++++

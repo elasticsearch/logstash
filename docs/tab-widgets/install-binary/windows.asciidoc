@@ -1,0 +1,35 @@
+// tag::win[]
+ifeval::["{release-state}"=="unreleased"]
+
+Version {logstash_version} of Logstash has not yet been released.
+
+endif::[]
+
+ifeval::["{release-state}"!="unreleased"]
+
+. Download the {beatname_uc} Windows zip file from the
+https://www.elastic.co/downloads/beats/{beatname_lc}[downloads page].
+
+. Extract the contents of the zip file into `C:\Program Files`.
+
+. Rename the +{beatname_lc}-<version>-windows+ directory to +{beatname_uc}+.
+
+. Open a PowerShell prompt as an Administrator (right-click the PowerShell icon
+and select *Run As Administrator*).
+
+. From the PowerShell prompt, run the following commands to install
+{beatname_uc} as a Windows service:
++
+["source","sh",subs="attributes"]
+----------------------------------------------------------------------
+PS > cd 'C:{backslash}Program Files{backslash}{beatname_uc}'
+PS C:{backslash}Program Files{backslash}{beatname_uc}> .{backslash}install-service-{beatname_lc}.ps1
+----------------------------------------------------------------------
+
+NOTE: If script execution is disabled on your system, you need to set the
+execution policy for the current session to allow the script to run. For
+example:
++PowerShell.exe -ExecutionPolicy UnRestricted -File .\install-service-{beatname_lc}.ps1+.
+
+endif::[]
+// end::win[]

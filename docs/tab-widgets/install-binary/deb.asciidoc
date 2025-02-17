@@ -1,0 +1,25 @@
+ifeval::["{release-state}"=="unreleased"]
+
+Version {logstash_version} of Logstash has not yet been released.
+
+endif::[]
+
+ifeval::["{release-state}"!="unreleased"]
+
+**DEB x86_64**
+
+["source","sh",subs="attributes"]
+------------------------------------------------
+curl -L -O https://artifacts.elastic.co/downloads/logstash-{version}-amd64.deb
+sudo dpkg -i logstash-{version}-amd64.deb
+------------------------------------------------
+
+**DEB AARCH64**
+
+["source","sh",subs="attributes"]
+------------------------------------------------
+curl -L -O https://artifacts.elastic.co/downloads/logstash-{version}-arm64.deb
+sudo dpkg -i logstash-{version}-arm64.deb
+------------------------------------------------
+
+endif::[]
