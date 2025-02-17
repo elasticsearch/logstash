@@ -66,22 +66,29 @@ of the virtual machine. This memory can't be controlled by {ls} and the settings
 Here are some tips for adjusting the JVM heap size:
 
 // tag::heap-size-tips[]
+* As a general guideline for most deployments, don't exceed 40-50% of physical memory.
+Logstash relies on off-heap memory for a few capabilities such as the Persistent Queue and
+Beats input. Some memory must also be left to run the Operating System and other processes.
+
 * The recommended heap size for typical ingestion scenarios should be no
 less than 4GB and no more than 8GB.
-
-* CPU utilization can increase unnecessarily if the heap size is too low,
-resulting in the JVM constantly garbage collecting. You can check for this issue
-by doubling the heap size to see if performance improves. 
-
-* Do not increase the heap size past the amount of physical memory. Some memory
-must be left to run the OS and other processes.  As a general guideline for most
-installations, don't exceed 50-75% of physical memory. The more memory you have,
-the higher percentage you can use.
 
 * Set the minimum (Xms) and maximum (Xmx) heap allocation size to the same
 value to prevent the heap from resizing at runtime, which is a very costly
 process.
 
+* CPU utilization can increase unnecessarily if the heap size is too low,
+resulting in the JVM constantly garbage collecting. You can check for this issue
+by doubling the heap size to see if performance improves. 
+
+* The portion of the JVM Heap needed to store inflight data, discounting other memory uses
+like the translate filter or the jdbc static filter, can be approximated with the following formula:
+for each pipeline, take the average message size that Logstash inputs produce, multiplied by the batch size and number of 
+pipeline workers. Multiply this by an JVM+Logstash object overhead factor of about 20%. A few examples: 
+  - 1 pipeline * 2KB messages * 1024 batch size * 16 pipeline workers * 1.2 = 38 MB 
+  - 3 pipelines * 5KB messages * 5000 batch size * 25 pipeline workers * 1.2 = 2.1 GB
+  - 10 pipelines * 3KB messages * 1000 batch size * 20 pipeline workers * 1.2 = 703 MB
+  
 * You can make more accurate measurements of the JVM heap by using either the
 `jmap` command line utility distributed with Java or by using VisualVM. For more
 info, see <<profiling-the-heap>>.
