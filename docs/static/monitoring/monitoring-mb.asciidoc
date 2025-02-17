@@ -188,7 +188,7 @@ Alternatively, use the `remote_monitoring_user`
 +
 TIP: If you're using index lifecycle management, the remote monitoring user
 requires additional privileges to create and read indices. For more
-information, see `<<feature-roles>>`.
+information, see <<ls-monitoring-user>>.
 
 .. Add the `username` and `password` settings to the {es} output information in 
 the {metricbeat} configuration file.
