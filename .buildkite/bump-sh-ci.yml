@@ -1,0 +1,23 @@
+env:
+  ELASTIC_PR_COMMENTS_ENABLED: 'true'
+
+steps:
+  - label: ":mag: Check API diff"
+    if: build.pull_request.base_branch =~ /main|\d\.\d/ && build.pull_request.id != null
+    plugins:
+      - elastic/vault-secrets#v0.0.3:
+          path: "secret/ci/elastic-<your-repo>/<doc-token-path>"
+          field: "bump-token" # OPTIONAL
+          env_var: "BUMP_TOKEN" # OPTIONAL
+    command: |
+      - "bump api diff --doc $DOC_NAME --token $BUMP_TOKEN --file path/to/openapi.yml"
+    agents:
+      image: "docker.elastic.co/ci-agent-images/pipelib"
+
+# Executes deployment logic when running on main or release branches
+- label: ":rocket: Deploy API documentation"
+    if: build.branch == 'main' && build.pull_request.id == null
+    command:
+      - "bump deploy --doc $DOC_NAME  --token $BUMP_TOKEN --file <file-name>"
+    agents:
+      image: "docker.elastic.co/ci-agent-images/pipelib"
