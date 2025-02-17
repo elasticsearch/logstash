@@ -112,7 +112,7 @@ output {
     elasticsearch {
       hosts => "https://myEShost:9200"
       manage_template => false
-      index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      index => "%{[@metadata][beat]}-%{[@metadata][version]}"
       pipeline => "%{[@metadata][pipeline]}" <1>
       user => "elastic"
       password => "secret"
@@ -121,7 +121,7 @@ output {
     elasticsearch {
       hosts => "https://myEShost:9200"
       manage_template => false
-      index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      index => "%{[@metadata][beat]}-%{[@metadata][version]}"
       user => "elastic"
       password => "secret"
     }
