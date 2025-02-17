@@ -8,14 +8,14 @@ You can take advantage of the extensive, built-in capabilities of Elastic {integ
 [[integrations-value]]
 === Elastic {integrations}: ingesting to visualizing 
 
-https://docs.elastic.co/integrations[Elastic {integrations}] provide quick, end-to-end solutions for:
+{integrations-docs}[Elastic {integrations}] provide quick, end-to-end solutions for:
 
 * ingesting data from a variety of data sources, 
 * ensuring compliance with the {ecs-ref}/index.html[Elastic Common Schema (ECS)],
 * getting the data into the {stack}, and 
 * visualizing it with purpose-built dashboards.
 
-{integrations} are available for https://docs.elastic.co/integrations/all_integrations[popular services and platforms], such as Nginx, AWS, and MongoDB, as well as many generic input types like log files.
+{integrations} are available for {integrations-docs}/all_integrations[popular services and platforms], such as Nginx, AWS, and MongoDB, as well as many generic input types like log files.
 Each integration includes pre-packaged assets to help reduce the time between ingest and insights. 
 
 To see available integrations, go to the {kib} home page, and click **Add {integrations}**. 
@@ -78,8 +78,10 @@ output { <3>
 -----
 
 <1> Use `filter-elastic_integration` as the first filter in your pipeline 
-<2> You can use additional filters as long as they follow `filter-elastic_integration`
+<2> You can use additional filters as long as they follow `filter-elastic_integration`. 
+   They will have access to the event as transformed by your enabled integrations.
 <3> Sample config to output data to multiple destinations
+
 
 [discrete]
 [[es-tips]]
@@ -93,3 +95,6 @@ Be sure that these features are enabled in the {logstash-ref}/plugins-outputs-el
 * Set {logstash-ref}/plugins-outputs-elasticsearch.html#plugins-outputs-elasticsearch-ecs_compatibility[`ecs-compatibility`] to `v1` or `v8`.
 
 Check out the {logstash-ref}/plugins-outputs-elasticsearch.html[`output-elasticsearch` plugin] docs for additional settings. 
+
+
+include::ea-integration-tutorial.asciidoc[]
