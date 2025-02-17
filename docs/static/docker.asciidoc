@@ -33,8 +33,23 @@ ifeval::["{release-state}"!="unreleased"]
 docker pull {docker-image}
 --------------------------------------------
 
-Alternatively, you can download other Docker images that contain only features
-available under the Apache 2.0 license. To download the images, go to 
+A hardened image based on the https://wolfi.dev/[Wolfi] image is available as well. 
+Using Wolfi-based images requires Docker version 20.10.10 or later.
+
+["source","sh",subs="attributes"]
+--------------------------------------------
+docker pull {docker-wolfi-image}
+--------------------------------------------
+
+Alternatively, a Docker image contaning only features under the Apache 2.0
+license is available as well.
+
+["source","sh",subs="attributes"]
+--------------------------------------------
+docker pull {docker-oss-image}
+--------------------------------------------
+
+To download these images, go to
 https://www.docker.elastic.co[www.docker.elastic.co]. 
 
 endif::[]

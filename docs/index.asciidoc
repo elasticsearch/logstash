@@ -13,6 +13,8 @@ include::./include/attributes-lsplugins.asciidoc[]
 :plugins-repo-dir:      {docdir}/../../logstash-docs/docs
 :docker-repo:           docker.elastic.co/logstash/logstash
 :docker-image:          {docker-repo}:{logstash_version}
+:docker-wolfi-image:    {docker-repo}-wolfi:{logstash_version}
+:docker-oss-image:      {docker-repo}-oss:{logstash_version}
 
 :versioned_docs:        false
 
