@@ -25,7 +25,7 @@ if [ -L "$0" ]; then
   RL="$(command -v readlink)"
   if [ $? -eq 0 ]; then
     # readlink exists
-    SOURCEPATH="$($RL $0)"
+    SOURCEPATH="$($RL -f $0)"
   else
     # readlink not found, attempt to parse the output of stat
     SOURCEPATH="$(stat -c %N $0 | awk '{print $3}' | sed -e 's/\‘//' -e 's/\’//')"
