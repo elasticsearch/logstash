@@ -4,8 +4,8 @@
 
 {ls} requires one of these versions:
 
-* Java 17 (default). Check out <<jdk17-upgrade>> for settings info.
-* Java 21
+* Java 17. Check out <<jdk17-upgrade>> for settings info.
+* Java 21 (default since 8.15.0)
 
 Use the
 http://www.oracle.com/technetwork/java/javase/downloads/index.html[official
@@ -20,7 +20,7 @@ for the official word on supported versions across releases.
 =====
 {ls} offers architecture-specific
 https://www.elastic.co/downloads/logstash[downloads] that include
-Adoptium Eclipse Temurin 17, a long term support (LTS) release of the JDK.
+Adoptium Eclipse Temurin 21, a long term support (LTS) release of the JDK.
 
 Use the LS_JAVA_HOME environment variable if you want to use a JDK other than the
 version that is bundled.
@@ -40,9 +40,9 @@ On systems with Java installed, this command produces output similar to the foll
 
 [source,shell]
 -----
-openjdk version "17.0.12" 2024-07-16
-OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
-OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode)
+openjdk version "21.0.5" 2024-10-15
+OpenJDK Runtime Environment Temurin-21.0.5+11 (build 21.0.5+11)
+OpenJDK 64-Bit Server VM Temurin-21.0.5+11 (build 21.0.5+11, mixed mode)
 -----
 
 [float]
@@ -67,7 +67,7 @@ installation, you may get an error message, and {ls} will not start properly.
 [[jdk17-upgrade]]
 ==== Using JDK 17
 
-{ls} uses JDK 17 by default, but you need to update settings in `jvm.options` and
+{ls} uses JDK 21 by default, but you need to update settings in `jvm.options` and
 `log4j2.properties` if you are upgrading from  {ls} 7.11.x (or earlier) to 7.12 or later.
 
 
