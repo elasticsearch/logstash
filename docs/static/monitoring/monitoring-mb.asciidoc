@@ -106,7 +106,7 @@ The `modules.d/logstash-xpack.yml` file contains these settings:
     xpack.enabled: true
 ----------------------------------
  
-Set the `hosts`, `username`, and `password` to authenticate with {ls}.
+Configure the `hosts` to point to the Logstash API endpoint.
 For other module settings, it's recommended that you accept the
 defaults.
 
