@@ -3,8 +3,8 @@
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
 
--Xms1g
--Xmx1g
+-Xms4g
+-Xmx4g
 
 ################################################################
 ## Expert settings
@@ -80,3 +80,13 @@
 # Sets the maximum nesting depth. The depth is a count of objects and arrays that have not
 # been closed, `{` and `[` respectively.
 #-Dlogstash.jackson.stream-read-constraints.max-nesting-depth=1000
+
+#-Dio.netty.eventLoopThreads=48
+#-Dio.netty.allocator.numHeapArenas=0
+#-Dio.netty.allocator.numDirectArenas=1
+#-Dio.netty.noPreferDirect=false
+
+-XX:NativeMemoryTracking=summary
+#-XX:MaxDirectMemorySize=64m
+-XX:MaxDirectMemorySize=128m
+-XX:-MaxFDLimit
