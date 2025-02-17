@@ -455,25 +455,31 @@ The <<plugins-filters-http,http filter>> integrates with external web
 services/REST APIs, and enables lookup enrichment against any HTTP service or
 endpoint. This plugin is well suited for many enrichment use cases, such as
 social APIs, sentiment APIs, security feed APIs, and business service APIs.
-//+
-//[source,txt]
-//-----
-//filter {
-//  http {
-//    url => "http://example.com"
-//    verb => GET
-//    body => {
-//      "user-id" => "%{user}"
-//      "api-key" => "%{api_key}"
-//    }
-//    body_format => "json"
-//    headers =>
-//      "Content-type" => "application/json"
-//    }
-//    target_body => "new_field"
-//  }
-//}
-//-----
++
+[source,txt]
+-----
+http {
+    url => "https://neutrinoapi.com/convert"
+    body => {
+      "user-id" => "auser"
+      "api-key" => "anapikey"
+      "from-value" => "%{millimeters}"
+      "from-type" => "mm"
+      "to-type" => "inch"
+    }
+    verb => "POST"
+    body_format => "json"
+    target_body => "neutrinoapi_convert_mm_to_in"
+    add_tag => ["from_api"]
+    id => "http-neutrino-lookup"
+  }
+  mutate {
+    # needed because the neutrino response JSON object includes unneeded extra key/values
+    copy => {"[neutrinoapi_convert_mm_to_in][result]" => "[inches]"}
+    remove_field => ["neutrinoapi_convert_mm_to_in"]
+    id => "copy-to-inches"
+  }
+-----
 
 [[jdbc-static-def]]jdbc_static filter::
 
@@ -584,6 +590,35 @@ The <<plugins-filters-memcached,memcached filter>> enables key/value lookup
 enrichment against a Memcached object caching system.
 It supports both read (GET) and write (SET) operations. It is a notable addition
 for security analytics use cases. 
++
+GET example:
++
+[source,txt]
+-----
+memcached {
+    hosts => ["localhost"]
+    namespace => "convert_mm"
+    get => {
+      "%{millimeters}" => "[inches]"
+    }
+    add_tag => ["from_cache"]
+    id => "memcached-get"
+  }
+-----
++
+SET example:
++
+[source,txt]
+-----
+memcached {
+    hosts => ["localhost"]
+    namespace => "convert_mm"
+    set => {
+      "[inches]" => "%{millimeters}"
+    }
+    id => "memcached-set"
+  }
+-----
 
 [[translate-def]]translate filter::
 
