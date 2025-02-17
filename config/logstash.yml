@@ -40,7 +40,7 @@
 #
 # pipeline.workers: 2
 #
-# How many events to retrieve from inputs before sending to filters+workers
+# How many events to retrieve from inputs before sending to filters+outputs
 #
 # pipeline.batch.size: 125
 #
