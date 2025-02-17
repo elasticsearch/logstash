@@ -41,8 +41,7 @@ public class TopologicalSort {
 
         List<Vertex> sorted = new ArrayList<>(g.getVertices().size());
 
-        Deque<Vertex> pending = new LinkedList<>();
-        pending.addAll(g.getRoots());
+        Deque<Vertex> pending = new LinkedList<>(g.getRoots());
 
         Set<Edge> traversedEdges = new HashSet<>();
 
