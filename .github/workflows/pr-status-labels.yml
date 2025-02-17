@@ -1,0 +1,27 @@
+name: [Test] Pull Request Label Status
+
+on: [pull_request, pull_request_review]
+
+jobs:
+  prhelper_job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Label PR by status
+      id: runprhelper
+      uses: Matticusau/pr-helper@v1.2.6
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        enable-prmerge-automation: false
+        enable-prcomment-automation: false
+        enable-prlabel-automation: true
+        enable-prreviewer-frontmatter: false
+        enable-welcomemessage: false
+        welcome-message: "Thanks for opening an issue! Make sure you've followed CONTRIBUTING.md."
+        prmerge-requireallchecks: false
+        prmerge-requirereviewcount: 1
+        prmerge-method: 'merge'
+        prlabel-default: 'status:needs-triage'
+        prlabel-ready: 'status:approved'
+        prlabel-onhold: 'status:on-hold'
+        prlabel-reviewrequired: 'status:needs-review'
+        prlabel-automerge: 'auto-merge'
