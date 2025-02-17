@@ -80,24 +80,173 @@ describe LogStash::PersistedQueueConfigValidator do
     end
 
     context("disk does not have sufficient space") do
-      # two pq with different paths
-      let(:settings1) { settings.dup.merge("queue.max_bytes" => "1000pb") }
-      let(:settings2) { settings1.dup.merge("path.queue" => Stud::Temporary.directory) }
-
-      let(:pipeline_configs) do
-        LogStash::Config::Source::Local.new(settings1).pipeline_configs +
-          LogStash::Config::Source::Local.new(settings2).pipeline_configs
+      let(:pipeline_id) { "main" }
+      # Create a pipeline config double that matches what the class expects
+      let(:pipeline_config) do
+        double("PipelineConfig").tap do |config|
+          allow(config).to receive(:pipeline_id).and_return(pipeline_id)
+          allow(config).to receive(:settings).and_return(
+            double("Settings").tap do |s|
+              allow(s).to receive(:get).with("queue.type").and_return("persisted")
+              allow(s).to receive(:get).with("queue.max_bytes").and_return(300 * 1024 * 1024 * 1024) # 300GB
+              allow(s).to receive(:get).with("queue.page_capacity").and_return(64 * 1024 * 1024) # 64MB
+              allow(s).to receive(:get).with("pipeline.id").and_return(pipeline_id)
+              allow(s).to receive(:get).with("path.queue").and_return(queue_path)
+            end
+          )
+        end
       end
 
-      it "should throw" do
+      before do
+        allow(Dir).to receive(:glob).and_return(["page.1"])
+        allow(File).to receive(:size).and_return(25 * 1024 * 1024 * 1024)
+        allow(FsUtil).to receive(:hasFreeSpace).and_return(false)
+        allow(Files).to receive(:exists).and_return(true)
+
+        # Mock filesystem
+        mock_file_store = double("FileStore",
+          name: "disk1",
+          getUsableSpace: 100 * 1024 * 1024 * 1024  # 100GB free
+        )
+        allow(Files).to receive(:getFileStore).and_return(mock_file_store)
+      end
+
+      it "reports detailed space information" do
         expect(pq_config_validator).to receive(:check_disk_space) do |_, _, required_free_bytes|
           expect(required_free_bytes.size).to eq(1)
-          expect(required_free_bytes.values[0]).to eq(1024**5 * 1000 * 2) # require 2000pb
+          expect(required_free_bytes.values[0]).to eq(300 * 1024 * 1024 * 1024)
         end.and_call_original
 
-        expect(pq_config_validator.logger).to receive(:warn).once.with(/won't fit in file system/)
+        expect(pq_config_validator.logger).to receive(:warn).once do |msg|
+          expect(msg).to include("Total space required: 300gb")
+          expect(msg).to include("Current PQ usage: 25gb")
+        end
 
-        pq_config_validator.check({}, pipeline_configs)
+        pq_config_validator.check({}, [pipeline_config])
+      end
+
+      context "with multiple pipelines" do
+        let(:pipeline_id1) { "main" }
+        let(:pipeline_id2) { "secondary" }
+        let(:pipeline_id3) { "third" }
+
+        let(:base_queue_path) { queue_path }
+        let(:queue_path1) { ::File.join(base_queue_path, pipeline_id1) }
+        let(:queue_path2) { ::File.join(base_queue_path, pipeline_id2) }
+        let(:queue_path3) { ::File.join(Stud::Temporary.directory, pipeline_id3) }
+
+        let(:pipeline_config1) do
+          double("PipelineConfig").tap do |config|
+            allow(config).to receive(:pipeline_id).and_return(pipeline_id1)
+            allow(config).to receive(:settings).and_return(
+              double("Settings").tap do |s|
+                allow(s).to receive(:get).with("queue.type").and_return("persisted")
+                allow(s).to receive(:get).with("queue.max_bytes").and_return(300 * 1024 * 1024 * 1024)
+                allow(s).to receive(:get).with("queue.page_capacity").and_return(64 * 1024 * 1024)
+                allow(s).to receive(:get).with("pipeline.id").and_return(pipeline_id1)
+                allow(s).to receive(:get).with("path.queue").and_return(base_queue_path)
+              end
+            )
+          end
+        end
+
+        let(:pipeline_config2) do
+          double("PipelineConfig").tap do |config|
+            allow(config).to receive(:pipeline_id).and_return(pipeline_id2)
+            allow(config).to receive(:settings).and_return(
+              double("Settings").tap do |s|
+                allow(s).to receive(:get).with("queue.type").and_return("persisted")
+                allow(s).to receive(:get).with("queue.max_bytes").and_return(300 * 1024 * 1024 * 1024)
+                allow(s).to receive(:get).with("queue.page_capacity").and_return(64 * 1024 * 1024)
+                allow(s).to receive(:get).with("pipeline.id").and_return(pipeline_id2)
+                allow(s).to receive(:get).with("path.queue").and_return(base_queue_path)
+              end
+            )
+          end
+        end
+
+        let(:pipeline_config3) do
+          double("PipelineConfig").tap do |config|
+            allow(config).to receive(:pipeline_id).and_return(pipeline_id3)
+            allow(config).to receive(:settings).and_return(
+              double("Settings").tap do |s|
+                allow(s).to receive(:get).with("queue.type").and_return("persisted")
+                allow(s).to receive(:get).with("queue.max_bytes").and_return(300 * 1024 * 1024 * 1024)
+                allow(s).to receive(:get).with("queue.page_capacity").and_return(64 * 1024 * 1024)
+                allow(s).to receive(:get).with("pipeline.id").and_return(pipeline_id3)
+                allow(s).to receive(:get).with("path.queue").and_return(::File.dirname(queue_path3))
+              end
+            )
+          end
+        end
+
+        let(:mock_file_store1) { double("FileStore", name: "disk1", getUsableSpace: 100 * 1024 * 1024 * 1024) }
+        let(:mock_file_store2) { double("FileStore", name: "disk2", getUsableSpace: 50 * 1024 * 1024 * 1024) }
+
+        before do
+          # Precise path matching for Dir.glob
+          allow(Dir).to receive(:glob) do |pattern|
+            case pattern
+            when /#{pipeline_id1}.*page\.*/ then ["#{::File.dirname(pattern)}/page.1"]
+            when /#{pipeline_id2}.*page\.*/ then ["#{::File.dirname(pattern)}/page.1", "#{::File.dirname(pattern)}/page.2"]
+            when /#{pipeline_id3}.*page\.*/ then ["#{::File.dirname(pattern)}/page.1"]
+            else []
+            end
+          end
+
+          # Set up file size matching with full paths
+          allow(File).to receive(:size) do |path|
+            case
+            when path.include?(pipeline_id1) then 30 * 1024 * 1024 * 1024 # 30GB for main
+            when path.include?(pipeline_id2) then 25 * 1024 * 1024 * 1024 # 25GB for secondary
+            when path.include?(pipeline_id3) then 25 * 1024 * 1024 * 1024 # 25GB for third
+            else 0
+            end
+          end
+
+          allow(Files).to receive(:getFileStore) do |path|
+            case path.toString
+            when /#{pipeline_id3}/ then mock_file_store2
+            else mock_file_store1
+            end
+          end
+
+          allow(FsUtil).to receive(:hasFreeSpace).and_return(false)
+          allow(Files).to receive(:exists).and_return(true)
+        end
+
+        context "with multiple queues on same filesystem" do
+          it "reports consolidated information for same filesystem" do
+            expect(pq_config_validator.logger).to receive(:warn).once do |msg|
+              expect(msg).to match(/Persistent queues require more disk space than is available on a filesystem:/)
+              expect(msg).to match(/Filesystem 'disk1':/)
+              expect(msg).to match(/Total space required: 600gb/) # 300GB * 2
+              expect(msg).to match(/Current PQ usage: 80gb/) # 30GB + (2 * 25GB)
+              expect(msg).to match(/Current size: 30gb/) # First queue
+              expect(msg).to match(/Current size: 50gb/) # Second queue (2 files * 25GB)
+            end
+
+            pq_config_validator.check({}, [pipeline_config1, pipeline_config2])
+          end
+        end
+
+        context "with queues across multiple filesystems" do
+          it "reports separate information for each filesystem" do
+            expect(pq_config_validator.logger).to receive(:warn).once do |msg|
+              # First filesystem
+              expect(msg).to match(/Filesystem 'disk1':/)
+              expect(msg).to match(/Total space required: 600gb/) # 300GB * 2
+              expect(msg).to match(/Current PQ usage: 80gb/) # 30GB + (2 * 25GB)
+
+              # Second filesystem
+              expect(msg).to match(/Filesystem 'disk2':/)
+              expect(msg).to match(/Total space required: 300gb/) # 300GB
+              expect(msg).to match(/Current PQ usage: 25gb/) # 25GB
+            end
+
+            pq_config_validator.check({}, [pipeline_config1, pipeline_config2, pipeline_config3])
+          end
+        end
       end
     end
 

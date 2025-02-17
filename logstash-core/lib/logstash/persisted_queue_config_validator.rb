@@ -42,7 +42,8 @@ module LogStash
       warn_msg = []
       err_msg = []
       queue_path_file_system = Hash.new # (String: queue path, String: file system)
-      required_free_bytes  = Hash.new # (String: file system, Integer: size)
+      required_free_bytes = Hash.new # (String: file system, Integer: size)
+      current_usage_bytes = Hash.new # (String: file system, Integer: size)
 
       pipeline_configs.select { |config| config.settings.get('queue.type') == 'persisted'}
                       .select { |config| config.settings.get('queue.max_bytes').to_i != 0 }
@@ -60,12 +61,13 @@ module LogStash
         check_queue_usage(warn_msg, pipeline_id, max_bytes, used_bytes)
 
         queue_path_file_system[queue_path] = file_system
-        if used_bytes < max_bytes
-          required_free_bytes[file_system] = required_free_bytes.fetch(file_system, 0) + max_bytes - used_bytes
-        end
+        # Add max_bytes to required total for this filesystem
+        required_free_bytes[file_system] = required_free_bytes.fetch(file_system, 0) + max_bytes
+        # Track current usage separately
+        current_usage_bytes[file_system] = current_usage_bytes.fetch(file_system, 0) + used_bytes
       end
 
-      check_disk_space(warn_msg, queue_path_file_system, required_free_bytes)
+      check_disk_space(warn_msg, queue_path_file_system, required_free_bytes, current_usage_bytes)
 
       @last_check_pass = err_msg.empty? && warn_msg.empty?
 
@@ -85,15 +87,64 @@ module LogStash
       end
     end
 
-    # Check disk has sufficient space for all queues reach their max bytes. Queues may config with different paths/ devices.
+    # Check disk has sufficient space for all queues reach their max bytes. Queues may config with different paths/devices.
     # It uses the filesystem of the path and count the required bytes by filesystem
-    def check_disk_space(warn_msg, queue_path_file_system, required_free_bytes)
-      disk_warn_msg =
-        queue_path_file_system
-          .select { |queue_path, file_system| !FsUtil.hasFreeSpace(Paths.get(queue_path), required_free_bytes.fetch(file_system, 0)) }
-          .map { |queue_path, file_system| "The persistent queue on path \"#{queue_path}\" won't fit in file system \"#{file_system}\" when full. Please free or allocate #{required_free_bytes.fetch(file_system, 0)} more bytes." }
+    def check_disk_space(warn_msg, queue_path_file_system, required_free_bytes, current_usage_bytes)
+      # Group paths by filesystem
+      paths_by_filesystem = queue_path_file_system.group_by { |_, fs| fs }
 
-      warn_msg << disk_warn_msg unless disk_warn_msg.empty?
+      # Only process filesystems that need more space
+      filesystems_needing_space = paths_by_filesystem.select do |file_system, paths|
+        additional_needed = required_free_bytes.fetch(file_system, 0) - current_usage_bytes.fetch(file_system, 0)
+        !FsUtil.hasFreeSpace(Paths.get(paths.first.first), additional_needed)
+      end
+
+      return if filesystems_needing_space.empty?
+
+      message_parts = [
+        "Persistent queues require more disk space than is available on #{filesystems_needing_space.size > 1 ? 'multiple filesystems' : 'a filesystem'}:",
+        ""
+      ]
+
+      # Add filesystem-specific information
+      filesystems_needing_space.each do |file_system, paths|
+        total_required = required_free_bytes.fetch(file_system, 0)
+        current_usage = current_usage_bytes.fetch(file_system, 0)
+        additional_needed = total_required - current_usage
+        fs_path = Paths.get(paths.first.first)
+        free_space = Files.getFileStore(fs_path).getUsableSpace
+
+        message_parts.concat([
+          "Filesystem '#{file_system}':",
+          "- Total space required: #{LogStash::Util::ByteValue.human_readable(total_required)}",
+          "- Currently free space: #{LogStash::Util::ByteValue.human_readable(free_space)}",
+          "- Current PQ usage: #{LogStash::Util::ByteValue.human_readable(current_usage)}",
+          "- Additional space needed: #{LogStash::Util::ByteValue.human_readable(additional_needed)}",
+          "",
+          "Individual queue requirements:",
+          *paths.map { |path, _|
+            used = get_page_size(::File.join(path, "page.*"))
+            [
+              "  #{path}:",
+              "    Current size: #{LogStash::Util::ByteValue.human_readable(used)}",
+              "    Maximum size: #{LogStash::Util::ByteValue.human_readable(total_required / paths.size)}"
+            ]
+          }.flatten,
+          "" # Empty line between filesystems
+        ])
+      end
+
+      # Add common footer
+      message_parts.concat([
+        "Please either:",
+        "1. Free up disk space",
+        "2. Reduce queue.max_bytes in your pipeline configurations",
+        "3. Move PQ storage to a filesystem with more available space",
+        "Note: Logstash may fail to start if this is not resolved.",
+        ""
+      ])
+
+      warn_msg << message_parts.join("\n")
     end
 
     def get_file_system(queue_path)
