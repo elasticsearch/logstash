@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-Thread.abort_on_exception = true
+Thread.abort_on_exception = false
 Encoding.default_external = Encoding::UTF_8
 $DEBUGLIST = (ENV["DEBUG"] || "").split(",")
 

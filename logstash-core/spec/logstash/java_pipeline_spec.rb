@@ -232,6 +232,10 @@ describe LogStash::JavaPipeline do
     pipeline_settings.each {|k, v| pipeline_settings_obj.set(k, v) }
   end
 
+  after :each do
+    Thread.abort_on_exception = false
+  end
+  
   describe "#ephemeral_id" do
     it "creates an ephemeral_id at creation time" do
       pipeline = mock_java_pipeline_from_string("input { generator { count =>  1 } } output { null {} }")

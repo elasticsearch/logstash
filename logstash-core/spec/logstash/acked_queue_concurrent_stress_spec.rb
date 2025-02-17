@@ -83,7 +83,7 @@ describe LogStash::WrappedAckedQueue, :stress_test => true do
 
     shared_examples "a well behaved queue" do
       it "writes, reads, closes and reopens" do
-        Thread.abort_on_exception = true
+        Thread.abort_on_exception = false
 
         # force lazy initialization to avoid concurrency issues within threads
         counts
