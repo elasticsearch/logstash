@@ -1,5 +1,0 @@
-source: https://github.com/elastic/app-search-ruby/blob/v7.8.0/NOTICE.txt
-
-Elastic App Search Ruby client.
-
-Copyright 2012-2019 Elasticsearch B.V.

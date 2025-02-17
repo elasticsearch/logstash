@@ -3635,9 +3635,11 @@ module LogStashConfig
     r0
   end
 
+
+  class Parser < Treetop::Runtime::CompiledParser
+    include LogStashConfig
+  end
 end
 
-class LogStashConfigParser < Treetop::Runtime::CompiledParser
-  include LogStashConfig
-end
+LogStashConfigParser = LogStashConfig::Parser
 

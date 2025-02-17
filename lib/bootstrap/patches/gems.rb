@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-require "gems"
+#require "gems"
 
 # This patch is necessary to avoid encoding problems when Net:HTTP return stuff in ASCII format, but
 # consumer libraries, like the YAML parsers expect them to be in UTF-8. As we're using UTF-8 everywhere
@@ -26,6 +26,19 @@ module Gems
   module Request
     def get(path, data = {}, content_type = 'application/x-www-form-urlencoded', request_host = host)
       request(:get, path, data, content_type, request_host).force_encoding("UTF-8")
+    end
+  end
+end
+
+module ::Bundler
+  class Thor
+    class Arguments
+      def parse_array(name)
+        return shift if peek.is_a?(Array)
+        array = []
+        array << shift while current_is_value?
+        array
+      end
     end
   end
 end

@@ -21,7 +21,6 @@ require "pluginmanager/gem_installer"
 require "pluginmanager/errors"
 require "pluginmanager/pack_installer/pack"
 require "bootstrap/util/compress"
-require "rubygems/indexer"
 
 module LogStash module PluginManager module PackInstaller
   class Local

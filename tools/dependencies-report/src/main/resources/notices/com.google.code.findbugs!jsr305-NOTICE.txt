@@ -1,1 +1,0 @@
-Cannot find NOTICE.txt for the relatively old jsr305:1.3.9. Per https://search.maven.org/artifact/com.google.code.findbugs/jsr305/1.3.9/jar, the original source repo is at http://findbugs.googlecode.com/svn/trunk and is now defunct.

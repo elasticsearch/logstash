@@ -9,7 +9,6 @@ gem "paquet", "~> 0.2"
 gem "pleaserun", "~>0.0.28", require: false
 gem "rake", "~> 13", require: false
 gem "ruby-progressbar", "~> 1", require: false
-gem "ruby-maven-libs", "~> 3", ">= 3.9.6.1"
 gem "logstash-output-elasticsearch", ">= 11.14.0"
 gem "polyglot", require: false
 gem "treetop", require: false
@@ -38,9 +37,7 @@ gem "rspec", "~> 3.5", :group => :development
 gem "webmock", "~> 3", :group => :development
 gem "simplecov", "~> 0.22.0", :group => :development
 gem "simplecov-json", require: false, :group => :development
-gem "jar-dependencies", "= 0.4.1" # Gem::LoadError with jar-dependencies 0.4.2
 gem "murmurhash3", "= 0.1.6" # Pins until version 0.1.7-java is released
 gem "date", "= 3.3.3"
 gem "thwait"
 gem "bigdecimal", "~> 3.1"
-gem "psych", "5.2.2"
