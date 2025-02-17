@@ -242,6 +242,7 @@ dependencies {
     // Jackson version moved to versions.yml in the project root (the JrJackson version is there too)
     implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
+    api "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation 'org.codehaus.janino:janino:3.1.0'
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:${jacksonVersion}"
