@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+setlocal enableextensions
 
 cd /d "%~dp0.."
 for /f %%i in ('cd') do set RESULT=%%i

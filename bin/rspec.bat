@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+setlocal enableextensions
 set params='%*'
 
 call "%~dp0setup.bat" || exit /b 1

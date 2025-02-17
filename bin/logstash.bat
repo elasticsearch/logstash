@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+setlocal enableextensions
 set params='%*'
 
 

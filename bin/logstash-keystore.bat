@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+setlocal enableextensions
 
 call "%~dp0setup.bat" || exit /b 1
 if errorlevel 1 (
