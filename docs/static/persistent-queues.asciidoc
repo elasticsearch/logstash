@@ -18,6 +18,15 @@ delivery succeeds at least once.
 NOTE: Persistent queues are disabled by default.
 To enable them, check out <<configuring-persistent-queues>>.
 
++
+NOTE: The Persistent Queue is under active development and continues to improve
+with each release of Logstash; using the latest available version of Logstash
+will ensure you're using the best available version of this and other features.
+To enable the smoothest transition when upgrading, especially from versions
+prior to 6.3.0, you're encouraged to
+<<upgrading-logstash-pqs#_drain_the_persistent_queue,drain the queue>> prior to
+performing an upgrade.
+
 [[persistent-queues-limitations]]
 ==== Limitations of persistent queues
 
