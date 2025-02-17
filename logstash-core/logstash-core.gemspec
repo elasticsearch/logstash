@@ -22,6 +22,10 @@ if File.exist?(project_versions_yaml_path)
     logstash_version_line = original_lines.find {|line| line.match(/^logstash:/) }
     logstash_version_line.chomp!
     logstash_version_line << "-#{ENV['VERSION_QUALIFIER']}\n"
+  elsif ENV['WORKFLOW_TYPE'] == 'snapshot'
+    logstash_version_line = original_lines.find {|line| line.match(/^logstash:/) }
+    logstash_version_line.chomp!
+    logstash_version_line << "-SNAPSHOT\n"
   end
   original_lines << "\n"
   original_lines << "# This is a copy the project level versions.yml into this gem's root and it is created when the gemspec is evaluated."
