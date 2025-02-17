@@ -1,0 +1,16 @@
+[discrete]
+[[authentication-elasticsearch]]
+== Authentication with {es}
+
+{es} requires that {ls] authenticate itself before a connection can be established.
+{ls} can use any of these authentication methods to send data to a secured {es} cluster:
+
+* Basic authentication credentials (username and password)
+* Token-based API authentication
+* A client certificate
+
+include::basic-auth.asciidoc[]
+include::api-keys.asciidoc[]
+include::pki-auth.asciidoc[]
+
+

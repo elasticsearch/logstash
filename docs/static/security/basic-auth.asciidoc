@@ -5,7 +5,7 @@
 Logstash needs to be able to manage index templates, create indices,
 and write and delete documents in the indices it creates.
 
-To set up authentication credentials for Logstash:
+To set up basic authentication credentials for Logstash:
 
 . Use the **Management > Roles** UI in {kib} or the `role` API to create a
 `logstash_writer` role. For *cluster* privileges, add `manage_index_templates` and `monitor`. 
@@ -52,9 +52,9 @@ POST _security/user/logstash_internal
 }
 ---------------------------------------------------------------
 
-. Configure Logstash to authenticate as the `logstash_internal` user you just
-created. You configure credentials separately for each of the {es} plugins in
-your Logstash `.conf` file. For example:
+. Configure Logstash to authenticate as the `logstash_internal` user you just created. 
+Configure credentials separately for each of the {es} plugins in your Logstash `.conf` file. 
+For example:
 +
 [source,js]
 --------------------------------------------------

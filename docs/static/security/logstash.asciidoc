@@ -1,9 +1,5 @@
 [[ls-security]]
 == Secure your connection to {es} 
-[subs="attributes"]
-++++
-<titleabbrev>Secure your connection</titleabbrev>
-++++
 
 The Logstash {es} {logstash-ref}/plugins-outputs-elasticsearch.html[output],
 {logstash-ref}/plugins-inputs-elasticsearch.html[input], and
@@ -23,10 +19,8 @@ Security is enabled by default on the {es} cluster (starting in 8.0).
 You must enable TLS/SSL in the {es} output section of the Logstash configuration in order to allow Logstash to communicate with the {es} cluster.
 
 include::es-security.asciidoc[]
-include::basic-auth.asciidoc[]
+include::auth-es.asciidoc[]
 include::grant-access.asciidoc[]
 include::tls-encryption.asciidoc[]
-include::pki-auth.asciidoc[]
 include::ls-monitoring.asciidoc[]
 include::pipeline-mgmt.asciidoc[]
-include::api-keys.asciidoc[]
