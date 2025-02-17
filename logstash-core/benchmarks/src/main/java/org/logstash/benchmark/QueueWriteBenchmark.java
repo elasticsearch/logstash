@@ -23,6 +23,10 @@ package org.logstash.benchmark;
 import java.nio.file.Files;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.logstash.Event;
@@ -30,6 +34,7 @@ import org.logstash.Timestamp;
 import org.logstash.ackedqueue.Queue;
 import org.logstash.ackedqueue.Settings;
 import org.logstash.ackedqueue.SettingsImpl;
+import org.logstash.benchmark.singlewriterqueue.AppendOnlyQueue;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -59,8 +64,12 @@ public class QueueWriteBenchmark {
 
     private String path;
 
+    private AppendOnlyQueue baselineQueue;
+    private Path baselineQueueDirectory;
+    private byte[] data;
+
     @Setup
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, NoSuchAlgorithmException {
         final Settings settings = settings();
         EVENT.setField("Foo", "Bar");
         EVENT.setField("Foo1", "Bar1");
@@ -70,12 +79,45 @@ public class QueueWriteBenchmark {
         path = settings.getDirPath();
         queue = new Queue(settings);
         queue.open();
+
+        setupBaselineQueue();
+    }
+
+    private void setupBaselineQueue() throws IOException, NoSuchAlgorithmException {
+        final Path queuePath = FileSystems.getDefault().getPath("/tmp/queue");
+        if (queuePath.toFile().exists()) {
+            baselineQueueDirectory = queuePath;
+        } else {
+            baselineQueueDirectory = java.nio.file.Files.createDirectory(queuePath);
+        }
+        baselineQueue = new AppendOnlyQueue(baselineQueueDirectory.toString());
+        data = generateRandomData(1024);
+    }
+
+    private static byte[] generateRandomData(int size) throws NoSuchAlgorithmException {
+        final SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        final byte[] res = new byte[size];
+        random.nextBytes(res);
+        return res;
     }
 
     @TearDown
     public void tearDown() throws IOException {
         queue.close();
         FileUtils.deleteDirectory(new File(path));
+
+        baselineQueue.close();
+        FileUtils.deleteDirectory(baselineQueueDirectory.toFile());
+//        java.nio.file.Files.list(baselineQueueDirectory).forEach(p -> p.toFile().delete());
+//        baselineQueueDirectory.toFile().delete();
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(EVENTS_PER_INVOCATION)
+    public void baseline() throws IOException {
+        for (int i = 0; i < EVENTS_PER_INVOCATION; i++) {
+            baselineQueue.write(data);
+        }
     }
 
     @Benchmark
@@ -91,7 +133,7 @@ public class QueueWriteBenchmark {
     private static Settings settings() throws IOException {
         return SettingsImpl.fileSettingsBuilder(String.valueOf(Files.createTempDirectory(null)))
             .capacity(256 * 1024 * 1024)
-            .queueMaxBytes(Long.MAX_VALUE)
+            .queueMaxBytes(EVENTS_PER_INVOCATION * 1024 * 15)
             .checkpointMaxWrites(1024)
             .checkpointMaxAcks(1024)
             .elementClass(Event.class).build();

@@ -61,6 +61,7 @@ dependencies {
   implementation 'commons-io:commons-io:2.16.1'
   runtimeOnly 'joda-time:joda-time:2.8.2'
   api "org.jruby:jruby-core:$jrubyVersion"
+  testImplementation 'junit:junit:4.12'
 }
 
 javadoc {

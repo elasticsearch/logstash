@@ -38,13 +38,13 @@ public final class Page implements Closeable {
     protected int elementCount;
     protected long firstUnreadSeqNum;
     protected final Queue queue;
-    protected PageIO pageIO;
+    protected final PageIO pageIO;
     private boolean writable;
 
     // bit 0 is minSeqNum
     // TODO: go steal LocalCheckpointService in feature/seq_no from ES
     // TODO: https://github.com/elastic/elasticsearch/blob/feature/seq_no/core/src/main/java/org/elasticsearch/index/seqno/LocalCheckpointService.java
-    protected BitSet ackedSeqNums;
+    protected final BitSet ackedSeqNums;
     protected Checkpoint lastCheckpoint;
 
     public Page(int pageNum, Queue queue, long minSeqNum, int elementCount, long firstUnreadSeqNum, BitSet ackedSeqNums, @NotNull PageIO pageIO, boolean writable) {
