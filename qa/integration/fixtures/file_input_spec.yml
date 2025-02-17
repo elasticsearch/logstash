@@ -1,0 +1,15 @@
+---
+services:
+  - logstash
+config:
+  read_mode: |-
+    input {
+      file {
+          path => '<%=options[:log_path]%>'
+          mode => 'read'
+          start_position => 'beginning'
+      }
+    }
+    output {}
+input: how_sample.input
+teardown_script:
