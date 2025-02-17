@@ -177,6 +177,25 @@ public final class Timestamp implements Comparable<Timestamp>, Queueable {
             .withDecimalStyle(DecimalStyle.ofDefaultLocale());
 
     private static Instant tryParse(final String iso8601, final Clock clock, final Locale locale) {
+        // be very fast when parsing 2024-12-10T11:03:52.571554Z
+        // we do this for writing to the queue
+        try {
+            int year = Integer.parseInt(iso8601.substring(0, 4));
+            int month = Integer.parseInt(iso8601.substring(5, 7));
+            int day = Integer.parseInt(iso8601.substring(8, 10));
+            int hour = Integer.parseInt(iso8601.substring(11, 13));
+            int minute = Integer.parseInt(iso8601.substring(14, 16));
+            int second = Integer.parseInt(iso8601.substring(17, 19));
+            int nano = Integer.parseInt(iso8601.substring(20, 26)) * 1000;
+
+            return Instant.ofEpochSecond(
+                    java.time.LocalDateTime.of(year, month, day, hour, minute, second)
+                            .toEpochSecond(java.time.ZoneOffset.UTC),
+                    nano);
+        } catch (Exception e) {
+            LOGGER.trace("Failed optimized ISO8601 parsing for input: {}", iso8601, e);
+        }
+
         final DateTimeFormatter configuredFormatter = LENIENT_ISO_DATE_TIME_FORMATTER.withLocale(locale)
                                                                                      .withDecimalStyle(DecimalStyle.of(locale))
                                                                                      .withZone(clock.getZone());
