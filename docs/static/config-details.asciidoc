@@ -67,14 +67,14 @@ Here are some tips for adjusting the JVM heap size:
 
 // tag::heap-size-tips[]
 * The recommended heap size for typical ingestion scenarios should be no
-less than 4GB and no more than 8GB.
+less than 4GB and no more than 8GB.  TODO: Revisit and refine recommendations
 
 * CPU utilization can increase unnecessarily if the heap size is too low,
 resulting in the JVM constantly garbage collecting. You can check for this issue
 by doubling the heap size to see if performance improves. 
 
 * Do not increase the heap size past the amount of physical memory. Some memory
-must be left to run the OS and other processes.  As a general guideline for most
+must be left to run the OS and other processes. As a general guideline for most
 installations, don't exceed 50-75% of physical memory. The more memory you have,
 the higher percentage you can use.
 
