@@ -1,7 +1,7 @@
-[[contributing-to-logstash]]
-== Contributing to Logstash
+[[develop-plugin]]
+== Develop a plugin
 
-You can add your own input, codec, filter, or output plugins to Logstash. 
+You can develop and add your own input, codec, filter, or output plugins to Logstash. 
 
 include::contrib-acceptance.asciidoc[]
 

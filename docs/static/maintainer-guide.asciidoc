@@ -8,8 +8,8 @@ through Pull Requests and issues are strongly encouraged.
 [float]
 === Contribution Guidelines
 
-For general guidance around contributing to Logstash Plugins, see the
-https://www.elastic.co/guide/en/logstash/current/contributing-to-logstash.html[_Contributing to Logstash_] section.
+For general guidance around contributing to Logstash plugins, see the
+<<,Contributing to Logstash>>.
 
 [float]
 === Document Goals

@@ -1,5 +1,5 @@
-[[contributing-java-plugin]]
-== Contributing a Java Plugin
+[[develop-java-plugin]]
+== Develop a java plugin
 
 Now you can write your own Java plugin for use with {ls}.
 We have provided instructions and GitHub examples to give
