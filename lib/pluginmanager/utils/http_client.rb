@@ -27,15 +27,10 @@ module LogStash module PluginManager module Utils
       proxy_url = ENV["https_proxy"] || ENV["HTTPS_PROXY"] || ""
       proxy_uri = URI(proxy_url)
 
-      Net::HTTP.start(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password, http_options(uri)) { |http| yield http }
-    end
-
-    def self.http_options(uri)
-      ssl_enabled = uri.scheme == HTTPS_SCHEME
-
-      {
-        :use_ssl => ssl_enabled
-      }
+      http = Net::HTTP.new(uri.host, uri.port, proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password)
+      http.use_ssl(uri.scheme == HTTPS_SCHEME)
+      http.open_timeout(10)
+      http.start { |h| yield h }
     end
 
     # Do a HEAD request on the file to see if it exist before downloading it

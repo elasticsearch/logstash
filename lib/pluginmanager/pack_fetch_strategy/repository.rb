@@ -58,6 +58,14 @@ module LogStash module PluginManager module PackFetchStrategy
         PluginManager.ui.debug("Network error, skipping Elastic pack, exception: #{e}")
 
         return nil
+      rescue Net::OpenTimeout => e
+        PluginManager.ui.debug('Network timeout, skipping Elastic pack.')
+
+        return nil
+      rescue StandardError => e
+        PluginManager.ui.debug("Unknown error, skipping Elastic pack, exception: #{e}")
+
+        return nil
       end
     end
   end
