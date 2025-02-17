@@ -1,31 +1,43 @@
 [[event-api]]
 === Event API
 
-This section is targeted for plugin developers and users of Logstash's Ruby filter. Below we document recent 
-changes (starting with version 5.0) in the way users have been accessing Logstash's event based data in 
-custom plugins and in the Ruby filter. Note that <<event-dependent-configuration>> 
-data flow in Logstash's config files -- using <<logstash-config-field-references>> -- is 
-not affected by this change, and will continue to use existing syntax.
+This section is targeted for plugin developers and users of {ls}'s Ruby filter.
+
+Event is the main object that encapsulates data flow internally in {ls} and provides an API for the plugin developers to interact with the event's content.
+Typically, this API is used in plugins and in a Ruby filter to retrieve data and use it for transformations.
+Event objects contain the original data sent to {ls} and any additional fields created during {ls}'s filter stages.
+
+[[event-api-event-factory]]
+==== Creating new Events with `EventFactory`
+
+Beginning with {ls} 7.14, the `EventFactory` is the preferred method of creating Events.
+An `EventFactory` is made available to plugins with the `Plugin#event_factory` API.
+
+NOTE: Plugins that need to run on older versions of Logstash can use the https://github.com/logstash-plugins/logstash-mixin-event_support[Event Support mixin], which provides a fallback implementation when run on older {ls} releases.
+
+NOTE: Prior to {ls} 7.14, events were created directly with `LogStash::Event.new`.
+      This direct usage is deprecated and may not continue to work in future releases of {ls}.
+
+===== `EventFactory#new_event`
+
+The plugin APIs provide an `event_factory` method, which provides an `EventFactory`.
+
+To create a new `Event` object, simply:
+
+[source,ruby]
+---------------------------------
+  event = event_factory.new_event
+---------------------------------
+
+If you wish for the event to be pre-constructed with data, you may pass a ruby Hash:
+
+[source,ruby]
+---------------------------------
+  event = event_factory.new_event("message" => "hello, world!")
+---------------------------------
 
 [float]
-==== Event Object
-
-Event is the main object that encapsulates data flow internally in Logstash and provides an API for the plugin 
-developers to interact with the event's content. Typically, this API is used in plugins and in a Ruby filter to 
-retrieve data and use it for transformations. Event object contains the original data sent to Logstash and any additional 
-fields created during Logstash's filter stages.
-
-In 5.0, we've re-implemented the Event class and its supporting classes in pure Java. Since Event is a critical component 
-in data processing,  a rewrite in Java improves performance and provides efficient serialization when storing data on disk. For the most part, this change aims at keeping backward compatibility and is transparent to the users. To this extent we've updated and published most of the plugins in Logstash's ecosystem to adhere to the new API changes. However, if you are maintaining a custom plugin, or have a Ruby filter, this change will affect you. The aim of this guide is to describe the new API and provide examples to migrate to the new changes.
-
-[float]
-==== Event API
-
-Prior to version 5.0, developers could access and manipulate event data by directly using Ruby hash syntax. For 
-example, `event[field] = foo`. While this is powerful, our goal is to abstract the internal implementation details 
-and provide well-defined getter and setter APIs.
-
-**Get API**
+==== Getting the current value of a field with `Event#get`
 
 The getter is a read-only access of field-based data in an Event.
 
@@ -34,8 +46,8 @@ The getter is a read-only access of field-based data in an Event.
 **Returns:** Value for this field or nil if the field does not exist. Returned values could be a string, 
 numeric or timestamp scalar value.
 
-`field` is a structured field sent to Logstash or created after the transformation process. `field` can also 
-be a nested <<field-references-deepdive,field reference>> such as `[field][bar]`.
+`field` is a structured field sent to Logstash or created after the transformation process.
+`field` can also be a nested <<field-references-deepdive,field reference>> such as `[field][bar]`.
 
 Examples:
 
@@ -57,13 +69,14 @@ Accessing @metadata
 event.get("[@metadata][foo]") # => "baz"
 --------------------------------------------------
 
-**Set API**
+[float]
+==== Setting fields with `Event#set`
 
 This API can be used to mutate data in an Event. 
 
 **Syntax:** `event.set(field, value)`
 
-**Returns:**  The current Event  after the mutation, which can be used for chainable calls.
+**Returns:** The value that was set.
 
 Examples:
 
@@ -80,6 +93,7 @@ event.set("[@metadata][foo]", "baz")
 --------------------------------------------------
 
 Mutating a collection after setting it in the Event has an undefined behaviour and is not allowed.
+After mutating a retrieved field, you must set the field with the result.
 
 [source,ruby]
 --------------------------------------------------
@@ -102,10 +116,92 @@ event.set("[foo][bar][c]", [3, 4])
 --------------------------------------------------
 
 [float]
+==== Removing a field with `Event#remove`
+
+This API can be used to remove a field entirely.
+
+**Syntax:** `event.remove(field)`
+
+**Returns:** The value of the field prior to its removal.
+
+Examples:
+
+[source,ruby]
+--------------------------------------------------
+event.set("[foo]", "zab")
+event.include?("[foo]") # => true
+event.include?("[bar]") # => false
+--------------------------------------------------
+
+[float]
+==== Testing a field's presence with `Event#include?`
+
+This API can be used to determine whether a field has been set.
+
+**Syntax:** `event.include?(field)`
+
+**Returns:**  `true` if the field has been set; otherwise `false`.
+
+Examples:
+
+[source,ruby]
+--------------------------------------------------
+event.set("[foo]", "zab")
+event.include?("[foo]") # => true
+event.remove("[foo]")   # => "zab"
+event.include?("[foo]") # => false
+--------------------------------------------------
+
+[float]
+==== Cancelling an event with `Event#cancel`
+
+An Event that has been cancelled will not be routed to additional filters or outputs.
+
+**Syntax:** `event.cancel`
+
+**Returns:**  `true`.
+
+[source,ruby]
+--------------------------------------------------
+event.cancel # => true
+--------------------------------------------------
+
+[float]
+==== Un-cancelling an event with `Event#uncancel`
+
+An Event that has been cancelled can be un-cancelled to ensure that it _is_ processed by subsequent filters and outputs.
+
+**Syntax:** `event.cancel`
+
+**Returns:**  `false`.
+
+[source,ruby]
+--------------------------------------------------
+event.uncancel # => false
+--------------------------------------------------
+
+[float]
+==== Determining cancellation status with `Event#cancelled?`
+
+An Event's cancellation status can be queried to determine whether it will be processed by subsequent filters and outputs.
+
+**Syntax:** `event.cancelled?`
+
+**Returns:**  `true` or `false`.
+
+[source,ruby]
+--------------------------------------------------
+event.cancel #=> true
+event.cancelled? # => true
+event.uncancel # => false
+event.cancelled? # => false
+--------------------------------------------------
+
+[float]
 ==== Ruby Filter
 
-The <<plugins-filters-ruby,Ruby Filter>> can be used to execute any ruby code and manipulate event data using the 
-API described above. For example, using the new API:
+The <<plugins-filters-ruby,Ruby Filter>> can be used to execute any ruby code and manipulate event data using the API described above.
+For example, using the API:
 
 [source,ruby]
 --------------------------------------------------

@@ -1,5 +1,6 @@
 :register_method:	true
 :multi_receive_method:	true
+:event_factory_method: false
 :plugintype:    	output
 :pluginclass:   	Outputs
 :pluginname:    	example

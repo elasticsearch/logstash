@@ -1,5 +1,6 @@
 :register_method:	true
 :run_method:		true
+:event_factory_method: true
 :plugintype:    	input
 :pluginclass:   	Inputs
 :pluginname:    	example

@@ -1,6 +1,7 @@
 :register_method:	true
 :encode_method:		true
 :decode_method:		true
+:event_factory_method: true
 :plugintype:    	codec
 :pluginclass:   	Codecs
 :pluginname:    	example

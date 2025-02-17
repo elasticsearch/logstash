@@ -1,5 +1,6 @@
 :register_method:	true
 :filter_method:		true
+:event_factory_method: true
 :plugintype:    	filter
 :pluginclass:   	Filters
 :pluginname:    	example

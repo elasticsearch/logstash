@@ -136,7 +136,7 @@ class LogStash::{pluginclass}::{pluginnamecap} < LogStash::{pluginclass}::Base
 
   def run(queue)
     Stud.interval(@interval) do
-      event = LogStash::Event.new("message" => @message, "host" => @host)
+      event = event_factory.new_event("message" => @message, "host" => @host)
       decorate(event)
       queue << event
     end # loop
@@ -191,7 +191,7 @@ class LogStash::{pluginclass}::{pluginnamecap} < LogStash::{pluginclass}::Base
   def decode(data)
     @lines.decode(data) do |line|
       replace = { "message" => line["message"].to_s + @append }
-      yield LogStash::Event.new(replace)
+      yield event_factory.new_event(replace)
     end
   end # def decode
 
@@ -522,7 +522,7 @@ ifndef::blockcodec[]
   def decode(data)
     @lines.decode(data) do |line|
       replace = { "message" => line["message"].to_s + @append }
-      yield LogStash::Event.new(replace)
+      yield event_factory.new_event(replace)
     end
   end # def decode
 ----------------------------------
@@ -579,7 +579,7 @@ The {pluginname} input plugin has the following `run` Method:
 ----------------------------------
   def run(queue)
     Stud.interval(@interval) do
-      event = LogStash::Event.new("message" => @message, "host" => @host)
+      event = event_factory.new_event("message" => @message, "host" => @host)
       decorate(event)
       queue << event
     end # loop
@@ -696,6 +696,57 @@ codec by including code similar to this:
 For more examples of output plugins, see the https://github.com/logstash-plugins?query=logstash-output[logstash-plugin github repository].
 
 endif::receive_method[]
+
+ifdef::event_factory_method[]
+
+===== `event_factory` Method
+
+Beginning with {ls} 7.14, we introduced an <<event-api-event-factory>> and deprecated direct access to `LogStash::Event.new`.
+A plugin's `EventFactory` can be accessed with the `event_factory` method, and can be used to create new events.
+
+===== `targeted_event_factory` Method
+
+Similarly, plugins that provide a `target` option can get a targeted `EventFactory` using the `targeted_event_factory` method.
+A targeted event factory will create events by setting the target field to the provided mapping instead of populating root-level fields.
+
+ifdef::event_factory_method[]
+
+===== `logger` Method
+
+Plugins have access to a logger, which can be used to emit structured logs.
+Plugins can emit logs at one of 5 different levels:
+ - `trace`: very low-level messages to assist with complex debugging
+ - `debug`: low-level messages to assist with simple debugging
+ - `info`: informational messages requring no action from the user
+ - `warn`: warning messages indicating that action may be required
+ - `error`: error messages indicating that the desired task could not be completed
+
+To use the logger, first retrieve it with the plugin's `logger` method, and then send it a message with the appropriate level:
+
+[source,ruby]
+------------------------------
+logger.info("widgets acquired")
+logger.warn("taking the slow route")
+------------------------------
+
+Additional context can be provided as a second argument key/value map:
+
+[source,ruby]
+------------------------------
+logger.info("widgets acquired", count: 17)
+logger.warn("Exception handled, will try again", exception: e.message, backtrace: e.backtrace)
+------------------------------
+
+===== `deprecation_logger` Method
+
+Plugins have access to a deprecation logger, which can be used to provide structured logs about behavior that is subject to change in a future release of your plugin.
+
+To use the deprecation logger, first retrieve it with the plugin's `deprecation_logger` method, and then send it a message:
+
+[source,ruby]
+------------------------------
+deprecation_logger.deprecated("Feature X will be removed in a future release. Please use feature Y instead.")
+------------------------------
 
 // Teardown is now in the base class... can be pruned?
 // /////////////////////////////////////////////////////////////////////////////
