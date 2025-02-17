@@ -242,4 +242,130 @@ module LogStash module Instrument module PeriodicPoller
       end
     end
   end
+
+  ## cgroupv2 implementation
+  class CgroupV2
+    include LogStash::Util::Loggable
+
+    ## `/proc/self/cgroup` contents look like this
+    # 0::/
+    # CPU statistics are still located in
+    # - cpu.stat
+    # CPU Limit is set within
+    # - cpu.max
+    # Memory Limit is set within
+    # - memory.max
+    # Memory Usage is set within
+    # - memory.current
+
+    CGROUP_FILE = "/proc/self/cgroup"
+    BASE_PATH = "/sys/fs/cgroup"
+    CPUSTAT_FILE = "cpu.stat"
+    CPULIMIT_FILE = "cpu.max"
+    MEMORY_LIMIT_FILE = "memory.max"
+    MEMORY_USAGE_FILE = "memory.current"
+
+    # exclude cpu.max. This could be missing
+    CRITICAL_PATHS = [CPUSTAT_FILE, MEMORY_USAGE_FILE]
+
+    class CGroupResources
+      include LogStash::Util::Loggable
+
+      def initialize
+        @cgroup_path = "/"
+      end
+
+      def cgroup_available?
+        all_lines = IO.readlines(CGROUP_FILE)
+        if all_lines.size == 1 and all_lines[0][0,3] == "0::"
+          @cgroup_path = all_lines[0].split(":")[2].chomp
+          # CRITICAL_PATHS.each do |path|
+          #   full_path = ::File.join(BASE_PATH, @cgroup_path, path)
+          #   unless ::File.exists?(full_path)
+          #     logger.debug("File #{full_path} does not exist")
+          #   end
+          # end
+          CRITICAL_PATHS.all?{|path| ::File.exists?(::File.join(BASE_PATH, @cgroup_path, path))}
+        else
+          false
+        end
+      end
+
+      def get_cpu_stats
+        # read cpu.stat and cpu.max
+        lines = IO.readlines(::File.join(BASE_PATH, @cgroup_path, CPUSTAT_FILE))
+        stats = {}
+        lines.each do |line|
+          parts = line.chomp.split(/\s+/)
+          stats[parts[0]] = parts[1].to_i
+        end
+        # read cpu.max
+        if ::File.exists?(::File.join(BASE_PATH, @cgroup_path, CPULIMIT_FILE))
+          lines = IO.readlines(::File.join(BASE_PATH, @cgroup_path, CPULIMIT_FILE))
+          parts = lines[0].chomp.split(/\s+/)
+          stats["quota_us"] = parts[0].to_i
+          stats["period_us"] = parts[1].to_i
+        end
+        stats
+      end
+
+      def get_mem_stats
+        stats = {}
+        # read memory.current
+        lines = IO.readlines(::File.join(BASE_PATH, @cgroup_path, MEMORY_USAGE_FILE))
+        stats["memory_current"] = lines[0].chomp.to_i
+
+        # read memory.max
+        if ::File.exists?(::File.join(BASE_PATH, @cgroup_path, MEMORY_LIMIT_FILE))
+          lines = IO.readlines(::File.join(BASE_PATH, @cgroup_path, MEMORY_LIMIT_FILE))
+          stats["memory_limit"] = lines[0].chomp.to_i
+        end
+        stats
+      end
+
+      def get_stats(cpu_stats, memory_stats)
+        stats = {}
+        # we need to fake the final object to make the API compatible to cgroup v1 (and metricbeat)
+        stats["cpuacct"] = {
+          "control_group" => @cgroup_path,
+          "usage_nanos" => cpu_stats.fetch("usage_usec", -1)
+        }
+        stats["cpu"] = {
+          "control_group" => @cgroup_path,
+          "cfs_period_micros" => cpu_stats.fetch("period_us", -1),
+          "cfs_quota_micros" => cpu_stats.fetch("quota_us", -1),
+          "stat" => {
+            "number_of_elapsed_periods" => cpu_stats.fetch("nr_periods", -1),
+            "number_of_times_throttled" => cpu_stats.fetch("nr_throttled", -1),
+            "time_throttled_nanos" => cpu_stats.fetch("throttled_usec", -1)
+          }
+        }
+        stats
+      end
+    end
+
+    CGROUP_RESOURCES = CGroupResources.new
+
+    class << self
+      def get_all
+        unless CGROUP_RESOURCES.cgroup_available?
+          logger.debug("One or more required cgroup files or directories not found: #{CRITICAL_PATHS.join(', ')}")
+          return
+        end
+
+        cpu_stats = CGROUP_RESOURCES.get_cpu_stats
+        memory_stats = CGROUP_RESOURCES.get_mem_stats
+
+        cgroups_stats = CGROUP_RESOURCES.get_stats(cpu_stats, memory_stats)
+        cgroups_stats
+      rescue => e
+        logger.debug("Error, cannot retrieve cgroups information", :exception => e.class.name, :message => e.message, :backtrace => e.backtrace.take(4)) if logger.debug?
+        nil
+      end
+
+      def get
+        get_all
+      end
+    end
+  end
 end end end

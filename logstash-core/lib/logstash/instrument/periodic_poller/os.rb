@@ -29,7 +29,10 @@ module LogStash module Instrument module PeriodicPoller
     end
 
     def collect_cgroup
-      if stats = Cgroup.get
+      # try cgroup v2 first and fallback to cgroup v1
+      if stats = CgroupV2.get
+        save_metric([:os], :cgroup, stats)
+      elsif stats = Cgroup.get
         save_metric([:os], :cgroup, stats)
       end
     end
