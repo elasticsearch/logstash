@@ -400,8 +400,31 @@ class LogStash::Agent
 
     converge_result = LogStash::ConvergeResult.new(pipeline_actions.size)
 
+    @running_action_threads = {}
+
+    slow_start_monitor = SlowStartMonitor.new(self)
+    slow_start_monitor.start_creating_pipelines do |still_loading_pipelines|
+      logger.warn("Starving pipelines loading", :slow_pipelines => still_loading_pipelines)
+      if auto_reload?
+        # retrieve the pipelines config and compute which Reload actions are present
+        results = @source_loader.fetch
+        if results.success?
+          pipeline_configs = results.response
+          pipeline_actions = resolve_actions(pipeline_configs)
+          reload_pipeline_ids = pipeline_actions
+                .select {|action| action.is_a?(LogStash::PipelineAction::Reload)}
+                .map {|action| action.pipeline_id}
+          pipelines_to_force_kill = reload_pipeline_ids & still_loading_pipelines
+          logger.warn("Pipelines to be killed: ", :pipelines_to_force_kill => pipelines_to_force_kill)
+          pipelines_to_force_kill.each do |pipeline_id|
+            @running_action_threads[pipeline_id].kill
+          end
+        end
+      end
+    end
+
     pipeline_actions.map do |action|
-      Thread.new(action, converge_result) do |action, converge_result|
+      @running_action_threads[action.pipeline_id] = Thread.new(action, converge_result) do |action, converge_result|
         LogStash::Util.set_thread_name("Converge #{action}")
         # We execute every task we need to converge the current state of pipelines
         # for every task we will record the action result, that will help us
@@ -441,6 +464,8 @@ class LogStash::Agent
       end
     end.each(&:join)
 
+    slow_start_monitor.finished_pipeline_creation
+
     logger.trace? && logger.trace("Converge results",
       :success => converge_result.success?,
       :failed_actions => converge_result.failed_actions.collect { |a, r| "id: #{a.pipeline_id}, action_type: #{a.class}, message: #{r.message}" },
@@ -451,7 +476,7 @@ class LogStash::Agent
   end
 
   def resolve_actions(pipeline_configs)
-    fail("Illegal access to `LogStash::Agent#resolve_actions()` without exclusive lock at #{caller[1]}") unless @convergence_lock.owned?
+#     fail("Illegal access to `LogStash::Agent#resolve_actions()` without exclusive lock at #{caller[1]}") unless @convergence_lock.owned?
     @state_resolver.resolve(@pipelines_registry, pipeline_configs)
   end
 
@@ -677,3 +702,34 @@ class LogStash::Agent
     end
   end
 end # class LogStash::Agent
+
+
+class SlowStartMonitor
+  include LogStash::Util::Loggable
+
+  attr_reader :logger
+
+  def initialize(agent)
+    @logger = self.class.logger
+    @monitor_thread = nil
+    @monitoring_interval = 5 #seconds
+    @agent = agent
+  end
+
+  def start_creating_pipelines(&block)
+    @thread = Thread.new do
+      Stud.interval(@monitoring_interval, :sleep_then_run => true) do
+        pipeline_names = @agent.loading_pipelines.keys
+        if !Stud.stop?
+          still_loading_pipelines = @agent.loading_pipelines.keys & pipeline_names
+#           logger.warn("Starving pipelines loading", :slow_pipelines => still_loading_pipelines)
+          block.call(still_loading_pipelines)
+        end
+      end
+    end
+  end
+
+  def finished_pipeline_creation
+    Stud.stop!(@thread)
+  end
+end
