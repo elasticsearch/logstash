@@ -44,7 +44,7 @@ GEM
       atomic (~> 1.1)
     avro (1.10.2)
       multi_json (~> 1)
-    aws-eventstream (1.3.0)
+    aws-eventstream (1.3.1)
     aws-partitions (1.995.0)
     aws-sdk-cloudfront (1.103.0)
       aws-sdk-core (~> 3, >= 3.210.0)
@@ -205,7 +205,7 @@ GEM
     kramdown (2.4.0)
       rexml
     language_server-protocol (3.17.0.4)
-    logger (1.6.5)
+    logger (1.6.6)
     logstash-codec-avro (3.4.1-java)
       avro (~> 1.10.2)
       logstash-core-plugin-api (>= 1.60, <= 2.99)
@@ -409,7 +409,7 @@ GEM
       logstash-codec-plain
       logstash-core-plugin-api (~> 2.0)
       stud (>= 0.0.22)
-    logstash-input-beats (6.9.2-java)
+    logstash-input-beats (6.9.3-java)
       concurrent-ruby (~> 1.0)
       logstash-codec-multiline (>= 2.0.5)
       logstash-codec-plain
@@ -483,7 +483,7 @@ GEM
       logstash-mixin-ecs_compatibility_support (~> 1.2)
       logstash-mixin-event_support (~> 1.0)
       stud
-    logstash-input-http (3.10.1-java)
+    logstash-input-http (3.10.2-java)
       logstash-codec-plain
       logstash-core-plugin-api (>= 1.60, <= 2.99)
       logstash-mixin-ecs_compatibility_support (~> 1.2)
@@ -527,7 +527,7 @@ GEM
       logstash-filter-grok (>= 4.4.1)
       logstash-mixin-ecs_compatibility_support (~> 1.2)
       stud (>= 0.0.22, < 0.1.0)
-    logstash-input-tcp (6.4.5-java)
+    logstash-input-tcp (6.4.6-java)
       jruby-openssl (>= 0.12.2)
       logstash-codec-json
       logstash-codec-json_lines
@@ -728,7 +728,7 @@ GEM
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     naught (1.1.0)
-    net-imap (0.4.18)
+    net-imap (0.4.19)
       date
       net-protocol
     net-pop (0.1.2)
@@ -769,7 +769,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1-java)
-    rack (3.1.9)
+    rack (3.1.10)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -787,7 +787,7 @@ GEM
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.2)
+    rspec-core (3.13.3)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -878,6 +878,7 @@ GEM
 PLATFORMS
   java
   universal-java-11
+  universal-java-17
 
 DEPENDENCIES
   belzebuth
