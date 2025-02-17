@@ -3,3 +3,4 @@
 
 include::ts-kafka.asciidoc[]
 include::ts-azure.asciidoc[]
+include::ts-date.asciidoc[]

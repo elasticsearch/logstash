@@ -1,0 +1,57 @@
+[[ts-date]]
+==== Date Filter issues and solutions
+ 
+[discrete] 
+[[ts-date-locale]]
+===== Date Parse Failures when using certain Locales
+
+*Symptoms*
+
+The {ls} Date Filter is unable to parse certain dates after upgrading to {ls} `8.15+`:
+
+A date filter configured to parse dates as follows:
+
+```
+date { locale => "en_gb" match => [ "[date]" , "yyyy MMM dd HH:mm:ss" ] target => "[parsed_date]"
+```
+
+when parsing the date `2024 Sep 30 11:11:11` would, prior to `8.15.0`, have created the following entry in the event:
+
+```
+"parsed_date" => 2024-09-30T11:11:11.000Z,
+```
+
+After `8.15.0`, this would have failed to parse with the following added instead:
+
+```
+"tags" => [
+        [0] "_dateparsefailure"
+    ]
+```
+
+as it now expects the date to be  `2024 Sept 30 11:11:11` for that specific locale.
+
+
+*Background*
+
+Between JDK17 and JDK21, a change was made in the locale provider provided by the JVM internal.
+JDK17 and JDK21 uses the https://cldr.unicode.org/[CLDR] locale provider by default, and between the release of JDK17 and JDK21, the version
+of CLDR used by the default changed from version 37 to version 42.
+
+To accommodate CLDR 38 in the JDK, https://github.com/openjdk/jdk/pull/1279/files#diff-97210acd6f77c4f4979c43445d60ba1c369f058230e41177dceca697800b1fa2R116[openjdk/jdk#1279] changed the abbreviated form of September from `Sep` to `Sept` in certain locales, including `en_GB` and `en_AU`.
+This caused parse failures when there is a mismatch in the abbreviated form of date between Logstash and where the date was created.
+
+For example, if the systems running Logstash are running with either an `en_AU` or `en_GB locale`, they will
+ expect September dates to use the `Sept` abbreviated form when the format states `MMM`.
+If the systems generating these dates are creating dates with a Sep abbreviation, parsing will fail.
+
+{ls} `8.15.0` upgraded the bundled JDK version to JDK21, which included the updated version of the `CLDR`, changing the
+date parsing behavior for certain locales.
+
+** Mitigations**
+
+* Change the locale in the date filter to a locale that still uses `Sep` as the abbreviated form for September, such as `en_US`.
+* Switch out the locale provider from CLDR to compat by setting `-Djava.locale.providers=COMPAT,SPI` in `jvm.options`.
+Note that JDK23 drops support for the `compat` locale provider. A solutions is to add mutate filters to substitute `Sep` with `Sept` for all fields where the date is being parsed by the date filter.
+Make sure these filters are placed *before* the date filter in the pipeline configuration.
+
