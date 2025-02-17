@@ -21,6 +21,7 @@ package org.logstash.util;
 
 import co.elastic.logstash.api.Password;
 import org.logstash.RubyUtil;
+import java.util.HashMap;
 
 /**
  * Represents and decode credentials to access Elastic cloud instance.
@@ -30,7 +31,24 @@ public class CloudSettingAuth {
     private String original;
     private String username;
     private Password password;
+	private String specialCharacters = "=$;@";
+	private static HashMap <String, String> charMap;
+	static {	
+		charMap = new HashMap<>();
+		charMap.put("=", "%3D");
+		charMap.put("$", "%24");
+		charMap.put(";", "%3B");
+		charMap.put("@", "%40");
+		charMap.put("%", "%25");
+	}
 
+    /**
+    * Verifies cloud authentication string using passed in username and password.
+    * Hides password to any external observers.
+    *
+    * @param value original username and password string
+    * @return null if input is null
+    */
     public CloudSettingAuth(String value) {
         if (value == null) {
             return;
@@ -40,9 +58,9 @@ public class CloudSettingAuth {
         if (parts.length != 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
             throw RubyUtil.RUBY.newArgumentError("Cloud Auth username and password format should be \"<username>:<password>\".");
         }
-
+		
         this.username = parts[0];
-        this.password = new Password(parts[1]);
+        this.password = new Password(encodeSpecialCharacters(parts[1]));
     }
 
     public String getOriginal() {
@@ -61,4 +79,21 @@ public class CloudSettingAuth {
     public String toString() {
         return String.join(":", username, password.toString());
     }
+	
+	//CS427 Issue Link: https://github.com/elastic/logstash/issues/11193
+	private String encodeSpecialCharacters(String value) {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < value.length(); i++)
+		{
+			String check = Character.toString(value.charAt(i));
+			if (specialCharacters.contains(check)){
+				buf.append(charMap.get(check));
+			}
+			else {
+				buf.append(check);
+			}
+		}
+		return buf.toString();
+		
+	}
 }

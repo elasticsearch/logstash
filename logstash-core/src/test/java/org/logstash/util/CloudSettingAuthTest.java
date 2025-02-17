@@ -74,5 +74,13 @@ public class CloudSettingAuthTest extends RubyTestBase {
         assertEquals("baggins", sut.getPassword().getValue());
         assertEquals("frodo:<password>", sut.toString());
     }
+    //CS 427 Issue Link: https://github.com/elastic/logstash/issues/11193
+    @Test
+    public void testSpecialCharactersPassword() {
+        final CloudSettingAuth sut = new CloudSettingAuth("frodo:=+$;@abcd");
+        assertEquals("frodo", sut.getUsername());
+        assertEquals("%3D+%24%3B%40abcd", sut.getPassword().getValue());
+        assertEquals("frodo:<password>", sut.toString());
+    }
 
 }
