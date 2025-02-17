@@ -63,6 +63,28 @@ public class ConfigVariableExpanderTest {
     }
 
     @Test
+    public void testPartialExpansion() throws Exception {
+        String key = "foo";
+        String val = "bar";
+        ConfigVariableExpander cve = getFakeCve(Collections.emptyMap(), Collections.singletonMap(key, val));
+
+        String expandedValue = (String) cve.expand("test_partial_${" + key + "}");
+        Assert.assertEquals("test_partial_"+val, expandedValue);
+    }
+
+    @Test
+    public void testTwoExpansions() throws Exception {
+        String key1 = "foo";
+        String key2 = "bar";
+        String val1 = "foo_val";
+        String val2 = "bar_val";
+        ConfigVariableExpander cve = getFakeCve(Collections.emptyMap(), Map.of(key1, val1, key2, val2));
+
+        String expandedValue = (String) cve.expand("${" + key1 + "}${" + key2 + "}");
+        Assert.assertEquals(val1+val2, expandedValue);
+    }
+
+    @Test
     public void testExpansionWithDefaultValue() throws Exception {
         String key = "foo";
         String val = "bar";

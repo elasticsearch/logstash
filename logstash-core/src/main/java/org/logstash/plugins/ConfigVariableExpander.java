@@ -82,9 +82,17 @@ public class ConfigVariableExpander implements AutoCloseable {
         String variable = (String) value;
 
         Matcher m = substitutionPattern.matcher(variable);
-        if (!m.matches()) {
-            return variable;
+
+        if (m.matches()) {
+            return replaceMatchedVariables(keepSecrets, m, variable);
+        } else if (m.find()) {
+            return m.replaceAll(matchResult -> replaceMatchedVariables(false, m, variable).toString());
         }
+
+        return variable;
+    }
+
+    private Object replaceMatchedVariables(boolean keepSecrets, Matcher m, String variable) {
         String variableName = m.group("name");
 
         if (secretStore != null) {
