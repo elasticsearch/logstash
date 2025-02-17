@@ -65,9 +65,9 @@ export JRUBY_OPTS="$JRUBY_OPTS $OPEN_JAVA_MODULES -J-XX:+TieredCompilation -J-XX
 
 tempfile=$(mktemp)
 if [ "x${PRESTART}" == "x" ]; then
-  opts=("--log" "$tempfile" "--overwrite" "--install" "--name" "${SERVICE_NAME}" "--user" "${LS_USER}" "--group" "${LS_GROUP}" "--description" "${SERVICE_DESCRIPTION}" "--nice" "${LS_NICE}" "--limit-open-files" "${LS_OPEN_FILES}")
+  opts=("--log" "$tempfile" "--overwrite" "--install" "--name" "${SERVICE_NAME}" "--user" "${LS_USER}" "--group" "${LS_GROUP}" "--description" "${SERVICE_DESCRIPTION}" "--nice" "${LS_NICE}" "--limit-open-files" "${LS_OPEN_FILES}" "--chdir" "${LS_SETTINGS_DIR}")
 else
-  opts=("--log" "$tempfile" "--overwrite" "--install" "--name" "${SERVICE_NAME}" "--user" "${LS_USER}" "--group" "${LS_GROUP}" "--description" "${SERVICE_DESCRIPTION}" "--nice" "${LS_NICE}" "--limit-open-files" "${LS_OPEN_FILES}" "--prestart" "${PRESTART}")
+  opts=("--log" "$tempfile" "--overwrite" "--install" "--name" "${SERVICE_NAME}" "--user" "${LS_USER}" "--group" "${LS_GROUP}" "--description" "${SERVICE_DESCRIPTION}" "--nice" "${LS_NICE}" "--limit-open-files" "${LS_OPEN_FILES}" "--chdir" "${LS_SETTINGS_DIR}"  "--prestart" "${PRESTART}")
 fi
 
 if [[ $2 ]]; then
