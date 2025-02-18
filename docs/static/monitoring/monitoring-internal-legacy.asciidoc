@@ -76,7 +76,8 @@ For more information about these settings, see <<monitoring-settings-legacy>>.
 --
 [source,yaml]
 --------------------------------------------------
-xpack.monitoring.enabled: true  
+xpack.monitoring.allow_legacy_collection: true
+xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.hosts: ["http://es-prod-node-1:9200", "http://es-prod-node-2:9200"] <1>
 xpack.monitoring.elasticsearch.username: "logstash_system"
 xpack.monitoring.elasticsearch.password: "changeme"
