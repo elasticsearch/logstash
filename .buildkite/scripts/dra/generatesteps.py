@@ -30,6 +30,8 @@ def package_x86_step(branch, workflow_type):
     export PATH="/opt/buildkite-agent/.rbenv/bin:/opt/buildkite-agent/.pyenv/bin:$PATH"
     eval "$(rbenv init -)"
     .buildkite/scripts/dra/build_packages.sh
+  artifact_paths:
+    - "**/*.hprof"
 '''
 
     return step
@@ -44,6 +46,8 @@ def package_x86_docker_step(branch, workflow_type):
     image: family/platform-ingest-logstash-ubuntu-2204
     machineType: "n2-standard-16"
     diskSizeGb: 200
+  artifact_paths:
+    - "**/*.hprof"
   command: |
     export WORKFLOW_TYPE="{workflow_type}"
     export PATH="/opt/buildkite-agent/.rbenv/bin:/opt/buildkite-agent/.pyenv/bin:$PATH"
@@ -63,6 +67,8 @@ def package_aarch64_docker_step(branch, workflow_type):
     imagePrefix: platform-ingest-logstash-ubuntu-2204-aarch64
     instanceType: "m6g.4xlarge"
     diskSizeGb: 200
+  artifact_paths:
+    - "**/*.hprof"
   command: |
     export WORKFLOW_TYPE="{workflow_type}"
     export PATH="/opt/buildkite-agent/.rbenv/bin:/opt/buildkite-agent/.pyenv/bin:$PATH"
