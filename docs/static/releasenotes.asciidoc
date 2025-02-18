@@ -3,6 +3,7 @@
 
 This section summarizes the changes in the following releases:
 
+* <<logstash-8-18-0,Logstash 8.18.0>>
 * <<logstash-8-17-2,Logstash 8.17.2>>
 * <<logstash-8-17-1,Logstash 8.17.1>>
 * <<logstash-8-17-0,Logstash 8.17.0>>
@@ -76,6 +77,54 @@ This section summarizes the changes in the following releases:
 * <<logstash-8-0-0-beta1,Logstash 8.0.0-beta1>>
 * <<logstash-8-0-0-alpha2,Logstash 8.0.0-alpha2>>
 * <<logstash-8-0-0-alpha1,Logstash 8.0.0-alpha1>>
+
+[[logstash-8-18-0]]
+=== Logstash 8.18.0 Release Notes
+
+[[core-8-18-0]]
+==== Changes to Logstash core
+* Ensures that logstash-provided defaults for jackson deserialization are applied unless explicitly overridden https://github.com/elastic/logstash/pull/16854[#16854].
+
+[[dependencies-8.18.0]]
+==== Updates to dependencies
+* Update JDK to 21.0.6+7 https://github.com/elastic/logstash/pull/16932[#16932]
+
+[[notable-8.18.0]]
+==== Performance improvements and notable issues fixed
+* Persistence queue moved deserialization of read events outside a critical section, this could give a boost up to 5 times to events per second read speed https://github.com/elastic/logstash/pull/17050[#17050].
+* Starting from es-output 12.0.2, a 404 response is treated as an error. Previously, central pipeline management considered 404 as an empty pipeline, not an error https://github.com/elastic/logstash/pull/17052[#17052].
+* Exposes the qualifier, like GA or RC, in cli and in the http api https://github.com/elastic/logstash/pull/16904[#16904].
+* Set Jackson stream read constraints defaults in code to avoid missed `jvm.options` updates during installation upgrade https://github.com/elastic/logstash/pull/16854[#16854].
+
+==== Plugins
+
+*Beats Input - 6.9.3*
+
+* Upgrade netty to 4.1.118 https://github.com/logstash-plugins/logstash-input-beats/pull/514[#514]
+
+*Elastic_serverless_forwarder Input - 1.0.0*
+
+* Promote from technical preview to GA https://github.com/logstash-plugins/logstash-input-elastic_serverless_forwarder/pull/10[#10]
+
+*Http Input - 3.10.2*
+
+* Upgrade netty to 4.1.118 https://github.com/logstash-plugins/logstash-input-http/pull/194[#194]
+
+*Tcp Input - 6.4.6*
+
+* Upgrade netty to 4.1.118 https://github.com/logstash-plugins/logstash-input-tcp/pull/233[#233]
+
+*Aws Integration - 7.2.1*
+
+* [DOC] Remove unneeded content and links in SNS and CloudWatch https://github.com/logstash-plugins/logstash-integration-aws/pull/54[#54]
+
+* Added an option `web_identity_token_file` to support IRSA (IAM Roles for Service Accounts) https://github.com/logstash-plugins/logstash-integration-aws/pull/52[#52]
+  
+
+*Kafka Integration - 11.6.0*
+
+* Support additional `oauth` and `sasl` configuration options for configuring kafka client https://github.com/logstash-plugins/logstash-integration-kafka/pull/189[#189]
+
 
 [[logstash-8-17-2]]
 === Logstash 8.17.2 Release Notes
