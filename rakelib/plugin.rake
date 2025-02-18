@@ -24,9 +24,9 @@ namespace "plugin" do
     LogStash::PluginManager::Main.run("bin/logstash-plugin", ["install"] + args)
   end
 
-  def remove_plugin(plugin)
+  def remove_plugin(plugin, *more_plugins)
     require_relative "../lib/pluginmanager/main"
-    LogStash::PluginManager::Main.run("bin/logstash-plugin", ["remove", plugin])
+    LogStash::PluginManager::Main.run("bin/logstash-plugin", ["remove", plugin] + more_plugins)
   end
 
   task "install-base" => "bootstrap" do

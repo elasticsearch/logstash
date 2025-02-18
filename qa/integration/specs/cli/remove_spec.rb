@@ -22,7 +22,7 @@ require_relative '../../framework/helpers'
 require "logstash/devutils/rspec/spec_helper"
 
 describe "CLI > logstash-plugin remove" do
-  before(:all) do
+  before(:each) do
     @fixture = Fixture.new(__FILE__)
     @logstash_plugin = @fixture.get_service("logstash").plugin_cli
   end
@@ -107,6 +107,132 @@ describe "CLI > logstash-plugin remove" do
 
           expect(presence_check.exit_code).to eq(0)
           expect(presence_check.stderr_and_stdout).to match(/logstash-codec-json/)
+        end
+      end
+
+      context "multiple plugins" do
+
+        let(:setup_plugin_list) do
+          fail("spec must override `setup_plugin_list`")
+        end
+
+        before(:each) do
+          if setup_plugin_list.any?
+            search_dir = File.expand_path(File.join(__dir__, "..", "..", "fixtures", "plugins"))
+            plugin_paths = []
+
+            aggregate_failures('setup: resolve plugin paths') do
+              setup_plugin_list.each do |requested_plugin|
+                found = Dir.glob(File.join(search_dir, "#{requested_plugin}-*.gem"))
+                expect(found).to have_attributes(:size => 1), lambda { "expected exactly one `#{requested_plugin}` in `#{search_dir}`, got #{found.inspect}" }
+                plugin_paths << found.first
+              end
+            end
+
+            aggregate_failures('setup: installing plugins') do
+              puts "installing plugins #{plugin_paths.inspect}"
+              outcome = @logstash_plugin.install(*plugin_paths)
+
+              expect(outcome.exit_code).to eq(0)
+              expect(outcome.stderr_and_stdout).to match(/Installation successful/)
+            end
+          end
+        end
+
+        context "when a remaining plugin has a dependency on a removed plugin" do
+          let(:setup_plugin_list) do
+            %w(
+              logstash-filter-zero_no_dependencies
+              logstash-filter-one_no_dependencies
+              logstash-filter-two_depends_on_one
+              logstash-filter-three_no_dependencies
+              logstash-filter-four_depends_on_one_and_three
+            )
+          end
+          it "errors helpfully without removing any of the plugins" do
+            execute = @logstash_plugin.remove("logstash-filter-three_no_dependencies", "logstash-filter-zero_no_dependencies")
+
+            expect(execute.exit_code).to eq(1)
+            expect(execute.stderr_and_stdout).to include('Failed to remove "logstash-filter-three_no_dependencies"')
+            expect(execute.stderr_and_stdout).to include("* logstash-filter-four_depends_on_one_and_three") # one of the dependency
+            expect(execute.stderr_and_stdout).to include("No plugins were removed.")
+
+            aggregate_failures("list plugins") do
+              presence_check = @logstash_plugin.list
+              expect(presence_check.exit_code).to eq(0)
+              expect(presence_check.stderr_and_stdout).to include('logstash-filter-three_no_dependencies')
+              expect(presence_check.stderr_and_stdout).to include('logstash-filter-zero_no_dependencies')
+            end
+          end
+        end
+        context "when multiple remaining plugins have a dependency on a removed plugin" do
+          let(:setup_plugin_list) do
+            %w(
+              logstash-filter-zero_no_dependencies
+              logstash-filter-one_no_dependencies
+              logstash-filter-two_depends_on_one
+              logstash-filter-three_no_dependencies
+              logstash-filter-four_depends_on_one_and_three
+            )
+          end
+          it "errors helpfully without removing any of the plugins" do
+            execute = @logstash_plugin.remove("logstash-filter-one_no_dependencies", "logstash-filter-zero_no_dependencies")
+
+            expect(execute.exit_code).to eq(1)
+            expect(execute.stderr_and_stdout).to include('Failed to remove "logstash-filter-one_no_dependencies"')
+            expect(execute.stderr_and_stdout).to include("* logstash-filter-four_depends_on_one_and_three") # one of the dependency
+            expect(execute.stderr_and_stdout).to include("* logstash-filter-two_depends_on_one") # one of the dependency
+            expect(execute.stderr_and_stdout).to include("No plugins were removed.")
+
+            aggregate_failures("list plugins") do
+              presence_check = @logstash_plugin.list
+              expect(presence_check.exit_code).to eq(0)
+              expect(presence_check.stderr_and_stdout).to include('logstash-filter-one_no_dependencies')
+              expect(presence_check.stderr_and_stdout).to include('logstash-filter-zero_no_dependencies')
+            end
+          end
+        end
+        context "when removing plugins and all plugins that depend on them" do
+          let(:setup_plugin_list) do
+            %w(
+              logstash-filter-zero_no_dependencies
+              logstash-filter-one_no_dependencies
+              logstash-filter-two_depends_on_one
+              logstash-filter-three_no_dependencies
+              logstash-filter-four_depends_on_one_and_three
+            )
+          end
+          it "removes the plugins" do
+            plugins_to_remove = %w(
+              logstash-filter-one_no_dependencies
+              logstash-filter-two_depends_on_one
+              logstash-filter-three_no_dependencies
+              logstash-filter-four_depends_on_one_and_three
+            ).shuffle #random order
+            execute = @logstash_plugin.remove(*plugins_to_remove)
+
+            aggregate_failures("removal action") do
+              expect(execute).to have_attributes(:exit_code => 0, :stderr_and_stdout => include("Success"))
+              plugins_to_remove.each do |gem_name|
+                expect(execute.stderr_and_stdout).to include("Successfully removed #{gem_name}")
+              end
+            end
+
+            aggregate_failures("list plugins") do
+              presence_check = @logstash_plugin.list
+              expect(presence_check.exit_code).to eq(0)
+              aggregate_failures("removed plugins") do
+                plugins_to_remove.each do |expected_removed_plugin|
+                  expect(presence_check.stderr_and_stdout).to_not include(expected_removed_plugin)
+                end
+              end
+              aggregate_failures("non-removed plugins") do
+                (setup_plugin_list - plugins_to_remove).each do |expected_remaining_plugin|
+                  expect(presence_check.stderr_and_stdout).to include(expected_remaining_plugin)
+                end
+              end
+            end
+          end
         end
       end
     end

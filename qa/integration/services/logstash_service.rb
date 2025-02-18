@@ -20,6 +20,7 @@ require_relative "monitoring_api"
 require "childprocess"
 require "bundler"
 require "socket"
+require "shellwords"
 require "tempfile"
 require 'yaml'
 
@@ -337,8 +338,9 @@ class LogstashService < Service
       @logstash_plugin = File.join(@logstash.logstash_home, LOGSTASH_PLUGIN)
     end
 
-    def remove(plugin_name)
-      run("remove #{plugin_name}")
+    def remove(plugin_name, *additional_plugins)
+      plugin_list = Shellwords.shelljoin([plugin_name]+additional_plugins)
+      run("remove #{plugin_list}")
     end
 
     def prepare_offline_pack(plugins, output_zip = nil)
@@ -351,12 +353,16 @@ class LogstashService < Service
       end
     end
 
-    def list(plugin_name, verbose = false)
-      run("list #{plugin_name} #{verbose ? "--verbose" : ""}")
+    def list(*plugins, verbose: false)
+      command = "list"
+      command << " --verbose" if verbose
+      command << " #{Shellwords.shelljoin(plugins)}" if plugins.any?
+      run(command)
     end
 
-    def install(plugin_name)
-      run("install #{plugin_name}")
+    def install(plugin_name, *additional_plugins)
+      plugin_list = ([plugin_name]+additional_plugins).flatten
+      run("install #{Shellwords.shelljoin(plugin_list)}")
     end
 
     def run(command)
@@ -364,7 +370,7 @@ class LogstashService < Service
     end
 
     def run_raw(cmd, change_dir = true, environment = {})
-      @logstash.run_cmd(cmd.split(' '), change_dir, environment)
+      @logstash.run_cmd(Shellwords.shellsplit(cmd), change_dir, environment)
     end
   end
 end
