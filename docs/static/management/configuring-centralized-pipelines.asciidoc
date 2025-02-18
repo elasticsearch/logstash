@@ -33,6 +33,8 @@ management. See <<ls-security>> for more information.
 NOTE: Centralized management is disabled until you configure and enable
 {security-features}.
 
+NOTE: Advanced features such as Dead Letter Queues are not currently supported by centralized management.
+
 IMPORTANT: After you've configured Logstash to use centralized pipeline
 management, you can no longer specify local pipeline configurations. This means
 that the `pipelines.yml` file and settings like `path.config` and
