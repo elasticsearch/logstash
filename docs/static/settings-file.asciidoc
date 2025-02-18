@@ -45,24 +45,6 @@ path:
 Note that the `${VAR_NAME:default_value}` notation is supported, setting a default batch delay
 of `50` and a default `path.queue` of `/tmp/queue` in the above example.
 
-Modules may also be specified in the `logstash.yml` file. The modules definition will have
-this format:
-
-[source,yaml]
--------------------------------------------------------------------------------------
-modules:
-  - name: MODULE_NAME1
-    var.PLUGIN_TYPE1.PLUGIN_NAME1.KEY1: VALUE
-    var.PLUGIN_TYPE1.PLUGIN_NAME1.KEY2: VALUE
-    var.PLUGIN_TYPE2.PLUGIN_NAME2.KEY1: VALUE
-    var.PLUGIN_TYPE3.PLUGIN_NAME3.KEY1: VALUE
-  - name: MODULE_NAME2
-    var.PLUGIN_TYPE1.PLUGIN_NAME1.KEY1: VALUE
-    var.PLUGIN_TYPE1.PLUGIN_NAME1.KEY2: VALUE
--------------------------------------------------------------------------------------
-
-IMPORTANT: If the <<command-line-flags,command-line flag>> `--modules` is used, any modules defined in the `logstash.yml` file will be ignored.
-
 The `logstash.yml` file includes the following settings. 
 
 [options="header"]
