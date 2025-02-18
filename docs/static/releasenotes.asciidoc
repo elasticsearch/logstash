@@ -3,6 +3,7 @@
 
 This section summarizes the changes in the following releases:
 
+* <<logstash-7-17-28,Logstash 7.17.28>>
 * <<logstash-7-17-27,Logstash 7.17.27>>
 * <<logstash-7-17-26,Logstash 7.17.26>>
 * <<logstash-7-17-25,Logstash 7.17.25>>
@@ -85,6 +86,73 @@ This section summarizes the changes in the following releases:
 * <<logstash-7-0-0-beta1,Logstash 7.0.0-beta1>>
 * <<logstash-7-0-0-alpha2,Logstash 7.0.0-alpha2>>
 * <<logstash-7-0-0-alpha1,Logstash 7.0.0-alpha1>>
+
+
+[[logstash-7-17-28]]
+=== Logstash 7.17.28 Release Notes
+
+---------- GENERATED CONTENT STARTS HERE ------------
+=== Logstash Pull Requests with label v7.17.28
+
+* Increase Xmx used by JRuby during Rake execution to 4Gb https://github.com/elastic/logstash/pull/16911[#16911]
+* Update JDK https://github.com/elastic/logstash/pull/17011[#17011]
+* Open modules to test also with jdk17 under Windows OS https://github.com/elastic/logstash/pull/17036[#17036]
+* Allow capturing heap dumps in DRA BK jobs https://github.com/elastic/logstash/pull/17081[#17081]
+* Backport PR #17081 to 7.17: Allow capturing heap dumps in DRA BK jobs https://github.com/elastic/logstash/pull/17087[#17087]
+
+=== Logstash Commits between 7.17 and 7.17.27
+
+Computed with "git log --pretty=format:'%h -%d %s (%cr) <%an>' --abbrev-commit --date=relative v7.17.27..7.17"
+
+f52bbe089 - (HEAD -> 7.17, origin/7.17) Allow capturing heap dumps in DRA BK jobs (#17081) (#17087) (4 days ago) <github-actions[bot]>
+2b6362069 - bump lock file for 7.17 (#17067) (6 days ago) <github-actions[bot]>
+7310e39aa - breaking: remove webhdfs output (#17061) (7 days ago) <João Duarte>
+80b9e7980 - multiple dependency upgrades (#17037) (7 days ago) <João Duarte>
+dda47e7f5 - Opens modules that could make fail on Windows and JDK 17 test (#17036) (11 days ago) <Andrea Selva>
+c2769702b - Update JDK (#17011) (2 weeks ago) <Andrea Selva>
+d15b3668b - Increase Xmx used by JRuby during Rake execution to 4Gb (#16911) (#16945) (4 weeks ago) <github-actions[bot]>
+8bcc13e37 - [doc] fix the necessary privileges of central pipeline management (4 weeks ago) <kaisecheng>
+5b61c55af - bump core to 7.17.28 (#16900) (5 weeks ago) <kaisecheng>
+00da44e7c - Release notes for 7.17.27 (#16878) (5 weeks ago) <github-actions[bot]>
+
+=== Logstash Plugin Release Changelogs ===
+Computed from "git diff v7.17.27..7.17 *.release"
+Changed plugin versions:
+logstash-input-azure_event_hubs: 1.4.9 -> 1.5.1
+logstash-input-beats: 6.2.6 -> 6.4.4
+logstash-integration-kafka: 10.12.1 -> 10.12.2
+logstash-output-webhdfs: 3.0.6 -> 3.0.6
+---------- GENERATED CONTENT ENDS HERE ------------
+
+==== Plugins
+
+*Azure_event_hubs Input - 1.5.1*
+
+* Updated multiple Java dependencies https://github.com/logstash-plugins/logstash-input-azure_event_hubs/pull/99[#99]
+
+* Updated Azure Event Hub client library to version 3.3.0 https://github.com/logstash-plugins/logstash-input-azure_event_hubs/pull/96[#96]
+
+*Beats Input - 6.4.4*
+
+* Updates Netty dependency to 4.1.87 https://github.com/logstash-plugins/logstash-input-beats/pull/466[#466]
+
+* [DOC] `executor_threads` default value explanation updated. https://github.com/logstash-plugins/logstash-input-beats/pull/461[#461]
+
+* Build: do not package jackson dependencies https://github.com/logstash-plugins/logstash-input-beats/pull/455[#455]
+
+* [DOC] Add direct memory example https://github.com/logstash-plugins/logstash-input-beats/pull/454[#454]
+
+* Feat: review and deprecate ssl protocol/cipher settings https://github.com/logstash-plugins/logstash-input-beats/pull/450[#450]
+
+* Fix: Removed use of deprecated `import` of java classes in ruby https://github.com/logstash-plugins/logstash-input-beats/pull/449[#449]
+
+* Added support for TLSv1.3. https://github.com/logstash-plugins/logstash-input-beats/pull/447[#447]
+
+*Kafka Integration - 10.12.2*
+
+* Upgrade avro to 1.11.4 and snappy-java to 1.1.10.4 and removed javax.ws.rs-api and jersey-common https://github.com/logstash-plugins/logstash-integration-kafka/pull/190[#190]
+
+*Webhdfs Output - 3.0.6*
 
 
 [[logstash-7-17-27]]
