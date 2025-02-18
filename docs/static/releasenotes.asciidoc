@@ -81,113 +81,20 @@ This section summarizes the changes in the following releases:
 [[logstash-8-18-0]]
 === Logstash 8.18.0 Release Notes
 
----------- GENERATED CONTENT STARTS HERE ------------
-=== Logstash Pull Requests with label v8.18.0
+[[core-8-18-0]]
+==== Changes to Logstash core
+* Ensures that logstash-provided defaults for jackson deserialization are applied unless explicitly overridden https://github.com/elastic/logstash/pull/16854[#16854].
 
-* Release notes for 8.16.1 https://github.com/elastic/logstash/pull/16691[#16691]
-* Backport PR #16691 to 8.x: Release notes for 8.16.1 https://github.com/elastic/logstash/pull/16708[#16708]
-* ensure jackson overrides are available to static initializers https://github.com/elastic/logstash/pull/16719[#16719]
-* Docs: Troubleshooting update https://github.com/elastic/logstash/pull/16721[#16721]
-* Backport PR #16721 to 8.x: Docs: Troubleshooting update https://github.com/elastic/logstash/pull/16730[#16730]
-* Pin `jar-dependencies` to `0.4.1` https://github.com/elastic/logstash/pull/16747[#16747]
-* Backport PR #16747 to 8.x: Pin `jar-dependencies` to `0.4.1` https://github.com/elastic/logstash/pull/16748[#16748]
-* Pin `date` dependency to `3.3.3` https://github.com/elastic/logstash/pull/16755[#16755]
-* Backport PR #16719 to 8.x: ensure jackson overrides are available to static initializers https://github.com/elastic/logstash/pull/16756[#16756]
-* ensure inputSize state value is reset during buftok.flush https://github.com/elastic/logstash/pull/16760[#16760]
-* Backport PR #16755 to 8.x: Pin `date` dependency to `3.3.3` https://github.com/elastic/logstash/pull/16761[#16761]
-* Update serverless tests to include product origin header https://github.com/elastic/logstash/pull/16766[#16766]
-* Release notes for 8.17.0 https://github.com/elastic/logstash/pull/16768[#16768]
-* Backport PR #16760 to 8.x: ensure inputSize state value is reset during buftok.flush https://github.com/elastic/logstash/pull/16769[#16769]
-* Avoid lock when ecs_compatibility is explicitly specified https://github.com/elastic/logstash/pull/16786[#16786]
-* Backport PR #16768 to 8.x: Release notes for 8.17.0 https://github.com/elastic/logstash/pull/16789[#16789]
-* Backport PR #16766 to 8.x: Update serverless tests to include product origin header https://github.com/elastic/logstash/pull/16797[#16797]
-* Doc: Update security docs to replace obsolete cacert setting https://github.com/elastic/logstash/pull/16798[#16798]
-* Backport PR #16798 to 8.x: Doc: Update security docs to replace obsolete cacert setting https://github.com/elastic/logstash/pull/16802[#16802]
-* Backport PR #16786 to 8.x: Avoid lock when ecs_compatibility is explicitly specified https://github.com/elastic/logstash/pull/16828[#16828]
-* Doc: Add json_lines known issue to release notes https://github.com/elastic/logstash/pull/16831[#16831]
-* Apply Jackson stream read constraints defaults at runtime https://github.com/elastic/logstash/pull/16832[#16832]
-* Respect environment variables in jvm.options https://github.com/elastic/logstash/pull/16834[#16834]
-* Backport PR #16831 to 8.x: Doc: Add json_lines known issue to release notes https://github.com/elastic/logstash/pull/16836[#16836]
-* Add pipeline metrics to Node Stats API https://github.com/elastic/logstash/pull/16839[#16839]
-* Backport PR #16832 to 8.x: Apply Jackson stream read constraints defaults at runtime https://github.com/elastic/logstash/pull/16845[#16845]
-* Backport PR #16839 to 8.x: Add pipeline metrics to Node Stats API https://github.com/elastic/logstash/pull/16850[#16850]
-* jackson stream read constraints: code-based defaults https://github.com/elastic/logstash/pull/16854[#16854]
-* Backport PR #16834 to 8.x: Respect environment variables in jvm.options https://github.com/elastic/logstash/pull/16866[#16866]
-* Avoid flow metrics initialization if pipeline `metric.collect` is disabled. https://github.com/elastic/logstash/pull/16881[#16881]
+[[dependencies-8.18.0]]
+==== Updates to dependencies
+* Update JDK to 21.0.6+7 https://github.com/elastic/logstash/pull/16932[#16932]
 
-=== Logstash Commits between 8.18 and 8.17.2
-
-Computed with "git log --pretty=format:'%h -%d %s (%cr) <%an>' --abbrev-commit --date=relative v8.17.2..8.18"
-
-bb6c2fe46 - (HEAD -> 8.18, origin/8.18) CPM handle 404 response gracefully with user-friendly log (#17052) (#17098) (51 minutes ago) <github-actions[bot]>
-d93441914 - qa: use clean expansion of LS tarball per fixture instance (#17082) (#17095) (3 days ago) <github-actions[bot]>
-905e28ba1 - Allow capturing heap dumps in DRA BK jobs (#17081) (#17084) (3 days ago) <github-actions[bot]>
-088586ca2 - bump lock file for 8.18 (#17079) (4 days ago) <github-actions[bot]>
-4bf8483ff - Upgrade net-imap to 0.5.6 (#17078) (5 days ago) <Mashhur>
-9fdda2608 - Fix conflicts (#17074) (5 days ago) <Dimitrios Liappis>
-283afd05a - Don't honor VERSION_QUALIFIER if set but empty (#17032) (#17069) (5 days ago) <github-actions[bot]>
-537902877 - inject VERSION_QUALIFIER into artifacts (#16904) (#17049) (#17064) (5 days ago) <github-actions[bot]>
-d7bad3d55 - docs: forward-port 8.16.4 and 8.17.2 release notes to 8.18 (#17057) (6 days ago) <Ry Biesemeyer>
-08439f87b - fix logstash-keystore to accept spaces in values when added via stdin (#17039) (#17040) (10 days ago) <github-actions[bot]>
-d37150e17 - Backport PR #16968 to 8.18: Fix BufferedTokenizer to properly resume after a buffer full condition respecting the encoding of the input string (#16968) (#17020) (12 days ago) <github-actions[bot]>
-7cb1968a2 - bump lock file for 8.18 (#16984) (3 weeks ago) <github-actions[bot]>
-1b15fde1a - upgrade jdk to 21.0.6+7 (#16932) (#16988) (3 weeks ago) <github-actions[bot]>
-2c8c3f98d - Forward copy the gemfile lock from previous 8.17 (#16982) (3 weeks ago) <Andrea Selva>
-2a8898a39 - plugin manager: add `--level=[major|minor|patch]` (default: `minor`) (#16899) (#16973) (3 weeks ago) <github-actions[bot]>
-a9bc29898 - add openssl command to wolfi image (#16970) (3 weeks ago) <kaisecheng>
-a74ef7982 - remove irrelevant warning for internal pipeline (#16938) (#16962) (3 weeks ago) <github-actions[bot]>
-a0378c05c - [Backport 8.x] Reimplement LogStash::String setting in Java (#16576) (#16959) (3 weeks ago) <Andrea Selva>
-a390dcc9d - fix user and password detection from environment's uri (#16955) (#16956) (3 weeks ago) <github-actions[bot]>
-388db0f83 - Doc: Remove extra symbol to fix formatting error (#16926) (#16934) (4 weeks ago) <github-actions[bot]>
-0cc5febf9 - [doc] fix the necessary privileges of central pipeline management (#16902) (#16928) (4 weeks ago) <github-actions[bot]>
-5063d8a93 - fix jars installer for new maven and pin psych to 5.2.2 (#16920) (4 weeks ago) <João Duarte>
-5b9e23c9f - Forward 8.17.1 release notes (#16923) (4 weeks ago) <kaisecheng>
-bc9025058 - Backport 16907 to 8.x: Use --qualifier in release manager (#16907) (#16913) (4 weeks ago) <Dimitrios Liappis>
-094724cd7 - Increase Xmx used by JRuby during Rake execution to 4Gb (#16911) (#16914) (4 weeks ago) <github-actions[bot]>
-24104833a - Add %{{TIME_NOW}} pattern for sprintf (#16906) (#16908) (4 weeks ago) <github-actions[bot]>
-b8d2cec61 - Replace/remove references to defunct freenode instance (#16873) (#16897) (5 weeks ago) <Cas Donoghue>
-bc9aee215 - deprecate pipeline bus v1 (#16643) (5 weeks ago) <Ry Biesemeyer>
-5763eb0cd - Validate the size limit in BufferedTokenizer. (#16882) (#16890) (6 weeks ago) <github-actions[bot]>
-6986f99ee - Test touchups (#16884) (#16885) (6 weeks ago) <github-actions[bot]>
-cba559220 - Initialize flow metrics if pipeline metric.collect params is enabled. (#16881) (#16886) (6 weeks ago) <github-actions[bot]>
-6b45a21c5 - jackson stream read constraints: code-based defaults (#16854) (#16883) (6 weeks ago) <github-actions[bot]>
-871d62fa5 - Forward port 8.15.5 and 8.16.2 release notes to 8.x (#16809) (6 weeks ago) <João Duarte>
-00c2b303d - elastic_integration plugin version updated. (#16876) (6 weeks ago) <Mashhur>
-0ac587edc - Ensure plugin config marked :deprecated logs to deprecation logger (#16863) (6 weeks ago) <Cas Donoghue>
-267eacc34 - Respect environment variables in jvm.options (#16834) (#16866) (6 weeks ago) <github-actions[bot]>
-4bf1fb514 - Doc: Add appropriate alternate for deprecated module in 8.x (#16856) (6 weeks ago) <Karen Metts>
-7341ff6e2 - Add pipeline metrics to Node Stats API (#16839) (#16850) (6 weeks ago) <github-actions[bot]>
-a3ab58425 - Apply Jackson stream read constraints defaults at runtime (#16832) (#16845) (7 weeks ago) <github-actions[bot]>
-1931c32e3 - Doc: Add json_lines known issue to release notes (#16831) (#16836) (8 weeks ago) <github-actions[bot]>
-51993816f - Avoid lock when ecs_compatibility is explicitly specified (#16786) (#16828) (8 weeks ago) <github-actions[bot]>
-dbb06c20c - update ironbank image to ubi9/9.5 (#16825) (9 weeks ago) <kaisecheng>
-a6d6df0e8 - Pin logstash-input-elastic_serverless_forwarder to 1.0 (#16816) (9 weeks ago) <Cas Donoghue>
-d9e345b78 - Doc: Update security docs to replace obsolete cacert setting (#16798) (#16802) (9 weeks ago) <github-actions[bot]>
-38e16187a - Release notes for 8.17.0 (#16768) (#16789) (9 weeks ago) <github-actions[bot]>
-baa03ab69 - Update serverless tests to include product origin header (#16766) (#16797) (9 weeks ago) <github-actions[bot]>
-625439b54 - Add `x-elastic-product-origin` header to kibana requests (#16765) (2 months ago) <Cas Donoghue>
-3954b61c9 - Major-pin default plugins (#16763) (2 months ago) <Ry Biesemeyer>
-652c2dab4 - ensure inputSize state value is reset during buftok.flush (#16760) (#16769) (2 months ago) <github-actions[bot]>
-5b3e62e52 - ensure jackson overrides are available to static initializers (#16719) (#16756) (2 months ago) <github-actions[bot]>
-1d82e377f - Pin plugins that incorporate breaking changes in 9.0 (#16759) (2 months ago) <Rob Bavey>
-38257e3e6 - Pin `date` dependency to `3.3.3` (#16755) (#16761) (2 months ago) <github-actions[bot]>
-0cfb5cf4b - Pin `jar-dependencies` to `0.4.1` (#16747) (#16748) (3 months ago) <github-actions[bot]>
-8061387de - Docs: Troubleshooting update for JDK bug handling cgroups v1 (#16721) (#16730) (3 months ago) <github-actions[bot]>
-03d57a1d9 - Revert "Backport PR #16482 to 8.x: Bugfix for BufferedTokenizer to completely consume lines in case of lines bigger then sizeLimit (#16569)" (#16714) (3 months ago) <Cas Donoghue>
-aa4302001 - Release notes for 8.16.1 (#16691) (#16708) (3 months ago) <github-actions[bot]>
-4176d5e77 - bump to 8.18.0-SNAPSHOT (#16702) (3 months ago) <João Duarte>
-edb438769 - Update license checker with new logger dependency (#16695) (#16699) (3 months ago) <github-actions[bot]>
-
-=== Logstash Plugin Release Changelogs ===
-Computed from "git diff v8.17.2..8.18 *.release"
-Changed plugin versions:
-logstash-input-beats: 6.9.2 -> 6.9.3
-logstash-input-elastic_serverless_forwarder: 0.1.5 -> 1.0.0
-logstash-input-http: 3.10.1 -> 3.10.2
-logstash-input-tcp: 6.4.5 -> 6.4.6
-logstash-integration-aws: 7.1.8 -> 7.2.1
-logstash-integration-kafka: 11.5.4 -> 11.6.0
----------- GENERATED CONTENT ENDS HERE ------------
+[[notable-8.18.0]]
+==== Performance improvements and notable issues fixed
+* Persistence queue moved deserialization of read events outside a critical section, this could give a boost up to 5 times to events per second read speed https://github.com/elastic/logstash/pull/17050[#17050].
+* Starting from es-output 12.0.2, a 404 response is treated as an error. Previously, central pipeline management considered 404 as an empty pipeline, not an error https://github.com/elastic/logstash/pull/17052[#17052].
+* Exposes the qualifier, like GA or RC, in cli and in the http api https://github.com/elastic/logstash/pull/16904[#16904].
+* Set Jackson stream read constraints defaults in code to avoid missed `jvm.options` updates during installation upgrade https://github.com/elastic/logstash/pull/16854[#16854].
 
 ==== Plugins
 
